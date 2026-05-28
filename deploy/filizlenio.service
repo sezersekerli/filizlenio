@@ -1,0 +1,17 @@
+[Unit]
+Description=Filizlen.io Next.js Application
+After=network.target
+
+[Service]
+Type=simple
+User=sezer
+Group=sezer
+WorkingDirectory=/home/sezer/projects/filizlenio
+Environment=NODE_ENV=production
+Environment=PORT=3010
+ExecStart=/usr/bin/npm run start:prod
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
