@@ -97,37 +97,70 @@ export const segments = [
   },
 ];
 
+export const dataFlowIntro = {
+  summary:
+    "Tarlada ölçüyoruz, bulutta birleştiriyoruz, web ve mobilde görüyorsunuz, birlikte karar veriyorsunuz, onaylanan komut vanalara gidiyor.",
+  paragraph:
+    "filizlen.io tek bir zincir kurar: veri tarlalardan gelir, filizlen.io Cloud'da toplanır, uygulama ve panelde izlenir, sistem sulama önerir ve siz onaylarsınız, ardından komutlar sulama hatlarına iletilir. Süreç döngü halinde devam eder.",
+  footnote:
+    "Saha sensör ve iletişim altyapısı iş ortaklarımızla kurulur; filizlen.io veriyi işler, saklar ve size karar + komut platformu sunar.",
+};
+
+/** Operasyon sırası — hero şeritleri ve akış diyagramı */
+export const dataFlowPipeline = [
+  { id: "sense", label: "Sense", tag: "Tarlada ölç" },
+  { id: "cloud", label: "Cloud", tag: "Bulutta birleştir" },
+  { id: "app", label: "App", tag: "İzle" },
+  { id: "decision", label: "Karar", tag: "Öner & onayla" },
+  { id: "control", label: "Control", tag: "Vanaya komut" },
+] as const;
+
 /** Müşteri dilinde operasyon akışı — ana sayfa + Nasıl Çalışır */
 export const howItWorksSteps = [
   {
     step: "01",
-    title: "Saha ölçümü",
+    module: "Sense",
+    title: "Tarlalardan veri",
     description:
-      "Toprak nemi, basınç ve hat verileri sensörlerle sürekli okunur. Mısır, buğday, ayçiçeği ve diğer ürünlerde aynı mantıkla izlenir.",
+      "Toprak nemi, sıcaklık ve hat verileri sensörlerle sürekli okunur; birden fazla tarla ve parsel aynı mantıkla izlenir.",
+    detail:
+      "Her parselde ölçüm cihazları çalışır. Veri kaybolmaz — dakikalar içinde toplanır ve bir sonraki adıma aktarılmaya hazır hale gelir. Mısır, buğday, ayçiçeği ve diğer ürünlerde aynı altyapı kullanılır.",
   },
   {
     step: "02",
-    title: "Buluta aktarım",
+    module: "Cloud",
+    title: "Cloud'a aktarım",
     description:
-      "Saha sinyalleri filizlen.io Cloud'da birleşir; geçmiş ve canlı veri tek kaynakta birikir.",
+      "Saha ölçümleri filizlen.io Cloud'da birleşir; canlı ve geçmiş veri tek kaynaktan okunur.",
+    detail:
+      "Farklı parsellerden gelen sinyaller tek havuzda toplanır. Dün gece ne olmuş, bu hafta ortalama nem ne — hepsi aynı platformda. Veriniz filizlen.io'da güvenle birikir ve karşılaştırılır.",
   },
   {
     step: "03",
-    title: "Web + mobil izleme",
+    module: "App",
+    title: "Web ve mobilde izleme",
     description:
-      "Tüm parselleri tek panelden takip edersiniz; ekip aynı veriye bakarak karar verir.",
+      "Çiftlik yöneticisi ve saha ekibi telefondan veya bilgisayardan aynı canlı veriye bakar.",
+    detail:
+      "Parsel özeti, grafikler ve alarmlar tek ekranda. Ekip aynı veriyi konuşur; kimse farklı bir Excel veya kağıt defterine güvenmek zorunda kalmaz. Tarlanız hem masanızda hem cebinizdedir.",
   },
   {
     step: "04",
-    title: "Akıllı öneri",
+    module: "Cloud",
+    title: "Karar verme",
     description:
-      "Sistem ne zaman ve ne kadar sulama yapılacağını önerir; kritik durumlarda uyarı üretir.",
+      "Sistem eşik, trend ve geçmişe göre sulama önerir veya uyarır; kritik komutlar sizin onayınızla ilerler.",
+    detail:
+      "Veri analitiği devreye girer: nem düştü mü, sulama penceresi uygun mu, acil müdahale gerekir mi? Sistem öneri sunar — siz onaylarsınız veya kurala bırakırsınız. Karar ölçülebilir ve kayıt altındadır.",
   },
   {
     step: "05",
-    title: "Komut uygulama",
+    module: "Control",
+    title: "Vanalara komut",
     description:
-      "Onayladığınız vana aç/kapat komutları sahaya anında gider; sulama operasyonu uzaktan yönetilir.",
+      "Onayladığınız vana ve pompa komutları sahaya gider; uygulama durumu takip edilir.",
+    detail:
+      "Sulama başlat, vana aç, programı çalıştır — komut sıraya alınır ve tarlaya iletilir. Başarılı mı, gecikti mi, tekrar denensin mi? Sistem bunu da raporlar. Sulama operasyonu uzaktan, kontrollü yönetilir.",
   },
 ];
 

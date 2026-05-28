@@ -8,6 +8,7 @@ import { GridBeam } from "@/components/effects/GridBeam";
 import { FlyingDrone } from "@/components/cozum/FlyingDrone";
 import { EcosystemHubLinks } from "@/components/cozum/EcosystemHubLinks";
 import { CozumModuleDetails } from "@/components/cozum/CozumModuleDetails";
+import { DataFlowPipeline } from "@/components/flow/DataFlowPipeline";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -15,10 +16,9 @@ import { Button } from "@/components/ui/Button";
 import {
   blurIn,
   defaultTransition,
-  floatSlow,
   staggerContainer,
 } from "@/lib/motion";
-import { products } from "@/lib/content";
+import { dataFlowPipeline, products } from "@/lib/content";
 
 /** Sense, Control, Cloud, Proje — köşe hücreleri */
 const orbitCells = [
@@ -81,8 +81,8 @@ export function CozumPageContent() {
               transition={{ ...defaultTransition, delay: 0.1 }}
               className="mt-4 max-w-xl text-base leading-relaxed text-muted md:mt-5 md:text-lg"
             >
-              Sahadan veri toplama, otomasyon, bulutta analiz ve mobilde günlük kontrol —
-              hepsi filizlen.io ekosisteminde, tek platformda birleşir.
+              Tarlada ölç, bulutta birleştir, uygulamada izle, birlikte karar ver, vanalara
+              komut gönder — tek platformda, kayıt altında.
             </motion.p>
             <motion.div
               variants={blurIn}
@@ -103,36 +103,48 @@ export function CozumPageContent() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.45, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="mx-auto mt-10 flex max-w-3xl flex-wrap items-center justify-center gap-2 md:mt-12 md:gap-2.5"
+            className="mx-auto mt-10 flex max-w-4xl flex-wrap items-center justify-center gap-2 md:mt-12 md:gap-2"
           >
-            {products.map((p, i) => (
-              <motion.div
-                key={p.id}
-                animate={{ y: [0, -6, 0] }}
-                transition={{
-                  duration: 3.5 + i * 0.4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: i * 0.25,
-                }}
-                className="glass-card rounded-lg px-3.5 py-2 text-xs font-medium text-primary md:text-sm"
-              >
-                {p.name.replace("filizlen.io ", "")}
-              </motion.div>
+            {dataFlowPipeline.map((node, i) => (
+              <div key={node.id} className="flex items-center gap-2">
+                <motion.div
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{
+                    duration: 3.5 + i * 0.35,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: i * 0.2,
+                  }}
+                  className={`glass-card rounded-lg px-3.5 py-2 text-xs font-medium md:text-sm ${
+                    node.id === "app"
+                      ? "flex items-center gap-1.5 text-accent"
+                      : "text-primary"
+                  }`}
+                >
+                  {node.id === "app" ? (
+                    <Smartphone className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                  ) : null}
+                  {node.label}
+                </motion.div>
+                {i < dataFlowPipeline.length - 1 ? (
+                  <span className="text-sm text-muted/70" aria-hidden>
+                    →
+                  </span>
+                ) : null}
+              </div>
             ))}
-            <span className="px-1 text-sm text-muted/80" aria-hidden>
-              →
-            </span>
-            <motion.div
-              {...floatSlow}
-              className="glass-card flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium text-accent md:text-sm"
-            >
-              <Smartphone className="h-3.5 w-3.5 md:h-4 md:w-4" />
-              App
-            </motion.div>
           </motion.div>
+          <p className="mx-auto mt-4 max-w-xl text-center text-xs text-muted md:text-sm">
+            Operasyon sırası: ölç → birleştir → izle → karar ver → komut gönder
+          </p>
         </motion.div>
       </section>
+
+      <AnimatedSection>
+        <div className="mx-auto max-w-6xl px-6 lg:px-8">
+          <DataFlowPipeline showIntro showFootnote />
+        </div>
+      </AnimatedSection>
 
       <AnimatedSection id="ekosistem" className="bg-[var(--background-elevated)]">
         <div className="mx-auto max-w-6xl px-6 lg:px-8">

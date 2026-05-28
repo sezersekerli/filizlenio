@@ -11,6 +11,7 @@ import {
 import { Hero } from "@/components/home/Hero";
 import { VideoShowcase } from "@/components/home/VideoShowcase";
 import { HowItWorks } from "@/components/home/HowItWorks";
+import { DataFlowPipeline } from "@/components/flow/DataFlowPipeline";
 import { Marquee } from "@/components/effects/Marquee";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -89,6 +90,12 @@ export function HomePageContent() {
       </AnimatedSection>
 
       <VideoShowcase />
+
+      <AnimatedSection>
+        <div className="mx-auto max-w-6xl px-6 lg:px-8">
+          <DataFlowPipeline showIntro />
+        </div>
+      </AnimatedSection>
 
       <HowItWorks />
 
