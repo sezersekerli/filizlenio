@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   staggerContainer,
@@ -11,24 +12,42 @@ import { Button } from "@/components/ui/Button";
 import { FloatingOrbs } from "@/components/effects/FloatingOrbs";
 import { GridBeam } from "@/components/effects/GridBeam";
 import { HeroVisual } from "@/components/home/HeroVisual";
+import { useDesktopVideo } from "@/hooks/useDesktopVideo";
 import { ArrowRight, Droplets } from "lucide-react";
 import { site } from "@/lib/content";
 
-const HERO_VIDEO =
-  "https://assets.mixkit.co/videos/preview/mixkit-irrigation-system-in-a-field-of-alfalfa-4260-large.mp4";
+const HERO_POSTER =
+  "https://images.unsplash.com/photo-1500382017468-9049fed747aa?w=1920&q=80";
+const HERO_VIDEO_SRC = "/videos/wheat-drone.mp4";
 
 export function Hero() {
+  const showVideo = useDesktopVideo();
+
   return (
     <section className="hero-gradient relative min-h-[100svh] overflow-hidden pt-28 pb-16 md:pt-32 md:pb-24">
-      <video
-        className="absolute inset-0 h-full w-full object-cover opacity-[0.22]"
-        autoPlay
-        muted
-        loop
-        playsInline
-        src={HERO_VIDEO}
-        poster="https://images.unsplash.com/photo-1500382017468-9049fed747aa?w=1920&q=80"
-      />
+      {showVideo ? (
+        <video
+          className="absolute inset-0 h-full w-full object-cover opacity-[0.22]"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          src={HERO_VIDEO_SRC}
+          poster={HERO_POSTER}
+        />
+      ) : (
+        <div className="absolute inset-0 opacity-[0.28]">
+          <Image
+            src={HERO_POSTER}
+            alt=""
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
+          />
+        </div>
+      )}
       <div className="absolute inset-0 bg-gradient-to-b from-[var(--background)]/95 via-[var(--background)]/80 to-[var(--background)]" />
       <FloatingOrbs />
       <GridBeam />
