@@ -21,7 +21,7 @@ export function Logo({ variant = "full", className, href = "/" }: LogoProps) {
     variant === "icon" ? (
       <img
         src="/brand/logo-icon.png"
-        alt="Filizlen"
+        alt="filizlen.io"
         width={48}
         height={48}
         className={imgClass}

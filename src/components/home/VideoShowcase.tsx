@@ -1,21 +1,33 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { Play, Pause, Volume2, VolumeX } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
+import { Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { blurIn, defaultTransition } from "@/lib/motion";
 
-const VIDEO_SRC =
-  "https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-crop-field-4232-large.mp4";
 const POSTER =
-  "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1920&q=80";
+  "https://images.unsplash.com/photo-1605000797499-95a51c5269ae?w=1920&q=80";
+const SCENES = [
+  {
+    src: "/videos/corn-sensor-loop.mp4",
+  },
+  {
+    src: "/videos/wheat-drone.mp4",
+  },
+  {
+    src: "/videos/sunflower-drone.mp4",
+  },
+];
 
 export function VideoShowcase() {
   const ref = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(true);
   const [muted, setMuted] = useState(true);
+  const [sceneIndex, setSceneIndex] = useState(0);
+  const activeScene = SCENES[sceneIndex];
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -27,22 +39,61 @@ export function VideoShowcase() {
 
   function togglePlay() {
     const v = videoRef.current;
+    const a = audioRef.current;
     if (!v) return;
     if (v.paused) {
       v.play();
+      if (a && !muted) {
+        a.currentTime = v.currentTime % (a.duration || 1);
+        void a.play();
+      }
       setPlaying(true);
     } else {
       v.pause();
+      if (a) a.pause();
       setPlaying(false);
     }
   }
 
   function toggleMute() {
     const v = videoRef.current;
+    const a = audioRef.current;
     if (!v) return;
-    v.muted = !v.muted;
-    setMuted(v.muted);
+    const nextMuted = !v.muted;
+    v.muted = nextMuted;
+    setMuted(nextMuted);
+
+    if (!a) return;
+    if (nextMuted) {
+      a.pause();
+      return;
+    }
+
+    a.volume = 0.38;
+    a.currentTime = v.currentTime % (a.duration || 1);
+    void a.play();
   }
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSceneIndex((prev) => (prev + 1) % SCENES.length);
+    }, 7800);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    const a = audioRef.current;
+    if (!v) return;
+
+    v.currentTime = 0;
+    if (playing) void v.play();
+
+    if (a && !muted) {
+      a.currentTime = 0;
+      void a.play();
+    }
+  }, [sceneIndex, playing, muted]);
 
   return (
     <section ref={ref} className="relative overflow-hidden py-24 md:py-32">
@@ -51,8 +102,8 @@ export function VideoShowcase() {
       <div className="relative mx-auto max-w-6xl px-6">
         <SectionHeading
           eyebrow="Sahada"
-          title="Tarımı havadan, veriyi yerden"
-          description="Akıllı sulama ve dijital tarım — görsel olarak da hissettirin. Filizlen sahada nasıl çalışır?"
+          title="Tarladan buluta, buluttan kontrole"
+          description="Mısır, buğday, ayçiçeği ve diğer tarım alanlarından gelen görüntüler — filizlen.io ile sahadaki veri aynı akışta yönetilir."
         />
 
         <motion.div style={{ y, scale, opacity }} className="relative mt-12">
@@ -66,33 +117,29 @@ export function VideoShowcase() {
             transition={defaultTransition}
             className="relative overflow-hidden rounded-3xl border border-primary/25 shadow-[0_0_100px_rgba(34,197,94,0.2)]"
           >
-            <video
-              ref={videoRef}
-              className="aspect-video w-full object-cover"
-              src={VIDEO_SRC}
-              poster={POSTER}
-              autoPlay
-              muted
-              loop
-              playsInline
-            />
+            <AnimatePresence mode="wait">
+              <motion.video
+                key={activeScene.src}
+                ref={videoRef}
+                className="aspect-video w-full object-cover"
+                src={activeScene.src}
+                poster={POSTER}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                initial={{ opacity: 0.12, scale: 1.02 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0.08, scale: 1.01 }}
+                transition={{ duration: 1.05, ease: "easeInOut" }}
+              />
+            </AnimatePresence>
+            <audio ref={audioRef} src="/videos/filizlen-drive.mp3" loop preload="metadata" />
 
             <div className="absolute inset-0 bg-gradient-to-t from-[#060b08] via-transparent to-[#060b08]/40" />
 
             <div className="absolute bottom-0 left-0 right-0 flex flex-wrap items-end justify-between gap-4 p-6 md:p-8">
-              <div>
-                <motion.p
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  className="text-sm font-semibold uppercase tracking-widest text-primary"
-                >
-                  Filizlen · Tarım 5.0
-                </motion.p>
-                <p className="mt-1 max-w-md text-lg font-medium text-foreground md:text-xl">
-                  Veri analitiği ile sulamayı optimize edin
-                </p>
-              </div>
-
               <div className="flex gap-3">
                 <motion.button
                   type="button"

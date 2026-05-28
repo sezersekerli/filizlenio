@@ -15,14 +15,14 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: site.title,
+    default: `${site.title} · ${site.domain}`,
     template: `%s · ${site.domain}`,
   },
   description: `${site.valueProposition} ${site.slogan}`,
   metadataBase: new URL(site.url),
   applicationName: site.domain,
   openGraph: {
-    title: site.title,
+    title: site.ogTitle,
     description: site.slogan,
     url: site.url,
     siteName: site.domain,

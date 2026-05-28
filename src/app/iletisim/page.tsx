@@ -7,7 +7,7 @@ import { site } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "İletişim",
-  description: "Filizlen satış, kurulum, destek ve yatırım görüşmeleri.",
+  description: "filizlen.io satış, kurulum, destek ve yatırım görüşmeleri.",
 };
 
 export default function IletisimPage() {

@@ -14,8 +14,6 @@ import { HeroVisual } from "@/components/home/HeroVisual";
 import { ArrowRight, Droplets } from "lucide-react";
 import { site } from "@/lib/content";
 
-const words = ["Veriyi", "toprağa,", "değeri", "hasada", "dönüştürün."];
-
 const HERO_VIDEO =
   "https://assets.mixkit.co/videos/preview/mixkit-irrigation-system-in-a-field-of-alfalfa-4260-large.mp4";
 
@@ -41,7 +39,7 @@ export function Hero() {
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
-          className="max-w-xl"
+          className="max-w-2xl lg:max-w-none"
         >
           <motion.p
             variants={blurIn}
@@ -57,32 +55,34 @@ export function Hero() {
             {site.slogan}
           </motion.p>
 
-          <h1 className="text-4xl font-bold leading-[1.08] tracking-tight text-foreground md:text-5xl lg:text-6xl xl:text-7xl">
-            {words.map((word, i) => (
-              <motion.span
-                key={word}
-                variants={blurIn}
-                transition={{ ...springTransition, delay: i * 0.07 }}
-                className="mr-[0.22em] inline-block last:mr-0"
-              >
-                {word === "hasada" ? (
-                  <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                    {word}
-                  </span>
-                ) : (
-                  word
-                )}
-              </motion.span>
-            ))}
+          <h1 className="text-balance text-4xl font-bold leading-[1.12] tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem] lg:leading-[1.1] xl:text-6xl">
+            <motion.span
+              variants={blurIn}
+              transition={{ ...springTransition, delay: 0.05 }}
+              className="block"
+            >
+              Veriyi toprağa,
+            </motion.span>
+            <motion.span
+              variants={blurIn}
+              transition={{ ...springTransition, delay: 0.14 }}
+              className="mt-1 block"
+            >
+              değeri{" "}
+              <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                hasada
+              </span>{" "}
+              dönüştürün.
+            </motion.span>
           </h1>
 
           <motion.p
             variants={blurIn}
             transition={{ ...defaultTransition, delay: 0.4 }}
-            className="mt-6 max-w-lg text-lg leading-relaxed text-muted"
+            className="mt-6 max-w-xl text-lg leading-relaxed text-muted"
           >
-            {site.valueProposition} Sensör, kontrol, bulut ve mobil uygulama ile
-            analitik ve optimizasyon odaklı akıllı sulama.
+            {site.domain} ile sensörden buluta, buluttan web ve mobil panele, panelden
+            vana kontrolüne — tek akışta.
           </motion.p>
 
           <motion.div

@@ -51,7 +51,7 @@ export function Footer() {
 
       <div className="border-t border-[rgba(34,197,94,0.08)] px-6 py-6">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 text-xs text-muted sm:flex-row">
-          <span>© {new Date().getFullYear()} Filizlen. Tüm hakları saklıdır.</span>
+          <span>© {new Date().getFullYear()} {site.domain}. Tüm hakları saklıdır.</span>
           <Link href="/gizlilik" className="hover:text-foreground">
             Gizlilik ve KVKK
           </Link>

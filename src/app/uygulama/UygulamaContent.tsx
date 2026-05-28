@@ -13,7 +13,7 @@ export function UygulamaContent() {
     <>
       <PageHero
         title="Tarlanız cebinizde"
-        description="Filizlen App — iOS ve Android. Saha operatörünün günlük kontrol merkezi; Filizlen Cloud ile birlikte."
+        description="filizlen.io App — iOS ve Android. Saha operatörünün günlük kontrol merkezi; filizlen.io Cloud ile birlikte."
       />
 
       <AnimatedSection>
@@ -30,7 +30,7 @@ export function UygulamaContent() {
                   <div className="flex h-full flex-col rounded-[2rem] bg-[#0a120e] p-4">
                     <div className="mb-4 flex items-center gap-2 border-b border-[rgba(34,197,94,0.15)] pb-3">
                       <Smartphone className="h-5 w-5 text-primary" />
-                      <span className="font-semibold">Filizlen</span>
+                      <span className="font-semibold">filizlen.io</span>
                     </div>
                     <div className="flex-1 space-y-3">
                       <div className="rounded-lg bg-primary/15 p-3">

@@ -1,7 +1,8 @@
 export const site = {
-  name: "Filizlen",
+  name: "filizlen.io",
   domain: "filizlen.io",
-  title: "filizlen.io Akıllı tarım",
+  title: "Anasayfa",
+  ogTitle: "filizlen.io — Akıllı tarım",
   slogan: "Akıllı tarım. Güçlü yarınlar.",
   tagline: "Akıllı tarım. Güçlü yarınlar.",
   valueProposition:
@@ -53,28 +54,28 @@ export const navLinks = [
 export const products = [
   {
     id: "sense",
-    name: "Filizlen Sense",
+    name: "filizlen.io Sense",
     description:
       "Toprak nemi, hava ve hat verilerini toplayın. Tarlanızı gerçek zamanlı görün.",
     icon: "sensors" as const,
   },
   {
     id: "control",
-    name: "Filizlen Control",
+    name: "filizlen.io Control",
     description:
       "Sulama ve gübreleme hatlarını uzaktan yönetin. Otomasyon kuralları ile iş gücünü azaltın.",
     icon: "control" as const,
   },
   {
     id: "cloud",
-    name: "Filizlen Cloud",
+    name: "filizlen.io Cloud",
     description:
       "Geçmiş ve canlı veriyi analiz edin; sulama önerileri ve uyarılar alın. Abonelik ile güncel kalın.",
     icon: "cloud" as const,
   },
   {
     id: "proje",
-    name: "Filizlen Proje",
+    name: "filizlen.io Proje",
     description:
       "Keşif, tasarım, kurulum, eğitim ve destek — tek muhatap, anahtar teslim.",
     icon: "project" as const,
@@ -96,28 +97,42 @@ export const segments = [
   },
 ];
 
-export const steps = [
+/** Müşteri dilinde operasyon akışı — ana sayfa + Nasıl Çalışır */
+export const howItWorksSteps = [
   {
     step: "01",
-    title: "Keşif",
-    description: "Arazi, ürün ve mevcut sulama altyapısı analiz edilir.",
+    title: "Saha ölçümü",
+    description:
+      "Toprak nemi, basınç ve hat verileri sensörlerle sürekli okunur. Mısır, buğday, ayçiçeği ve diğer ürünlerde aynı mantıkla izlenir.",
   },
   {
     step: "02",
-    title: "Kurulum",
-    description: "Sensör, kontrolör ve saha entegrasyonu devreye alınır.",
+    title: "Buluta aktarım",
+    description:
+      "Saha sinyalleri filizlen.io Cloud'da birleşir; geçmiş ve canlı veri tek kaynakta birikir.",
   },
   {
     step: "03",
-    title: "Bağlantı",
-    description: "Filizlen Cloud ve App ile eğitim ve canlı izleme başlar.",
+    title: "Web + mobil izleme",
+    description:
+      "Tüm parselleri tek panelden takip edersiniz; ekip aynı veriye bakarak karar verir.",
   },
   {
     step: "04",
-    title: "Optimizasyon",
-    description: "Veri birikimiyle sulama programı sürekli iyileştirilir.",
+    title: "Akıllı öneri",
+    description:
+      "Sistem ne zaman ve ne kadar sulama yapılacağını önerir; kritik durumlarda uyarı üretir.",
+  },
+  {
+    step: "05",
+    title: "Komut uygulama",
+    description:
+      "Onayladığınız vana aç/kapat komutları sahaya anında gider; sulama operasyonu uzaktan yönetilir.",
   },
 ];
+
+/** @deprecated use howItWorksSteps */
+export const steps = howItWorksSteps;
 
 export const team = [
   {

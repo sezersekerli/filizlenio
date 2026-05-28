@@ -7,7 +7,7 @@ import { TrendingUp, Layers, MapPin, Cpu } from "lucide-react";
 export const metadata: Metadata = {
   title: "Yatırımcılar",
   description:
-    "Filizlen — pre-seed / seed aşamasında AgTech yatırım fırsatı. Türkiye, akıllı sulama ve SaaS.",
+    "filizlen.io — pre-seed / seed aşamasında AgTech yatırım fırsatı. Türkiye, akıllı sulama ve SaaS.",
 };
 
 const highlights = [
@@ -29,7 +29,7 @@ const highlights = [
   {
     icon: Layers,
     title: "İş modeli",
-    text: "Donanım ve proje geliri + Filizlen Cloud aboneliği (ARR).",
+    text: "Donanım ve proje geliri + filizlen.io Cloud aboneliği (ARR).",
   },
 ];
 
@@ -59,8 +59,8 @@ export default function YatirimcilarPage() {
         <div className="mx-auto max-w-3xl px-6 space-y-6 text-muted leading-relaxed">
           <h2 className="text-xl font-semibold text-foreground">Ürün durumu</h2>
           <p>
-            Filizlen ekosistemi sahada aktif; kurulumlar ölçekleniyor. Gelir: donanım,
-            anahtar teslim proje ve abonelik tabanlı Filizlen Cloud.
+            filizlen.io ekosistemi sahada aktif; kurulumlar ölçekleniyor. Gelir: donanım,
+            anahtar teslim proje ve abonelik tabanlı filizlen.io Cloud.
           </p>
           <h2 className="text-xl font-semibold text-foreground">Fon kullanımı (özet)</h2>
           <ul className="list-inside list-disc space-y-2">

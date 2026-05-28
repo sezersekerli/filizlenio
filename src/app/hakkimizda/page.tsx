@@ -7,7 +7,7 @@ import { team } from "@/lib/content";
 export const metadata: Metadata = {
   title: "Hakkımızda",
   description:
-    "Filizlen — Türkiye odaklı Tarım 5.0 startup. Veri bilimi ve yazılımla akıllı sulama.",
+    "filizlen.io — Türkiye odaklı Tarım 5.0 startup. Veri bilimi ve yazılımla akıllı sulama.",
 };
 
 export default function HakkimizdaPage() {
@@ -21,7 +21,7 @@ export default function HakkimizdaPage() {
       <AnimatedSection>
         <div className="mx-auto max-w-3xl px-6">
           <p className="text-lg leading-relaxed text-muted">
-            Filizlen, tarım işletmeleri, seralar ve kooperatifler için analitik ve
+            filizlen.io, tarım işletmeleri, seralar ve kooperatifler için analitik ve
             optimizasyon odaklı akıllı sulama sistemleri geliştirir. Sensörlerden
             kontrolöre, bulut yazılımından mobil uygulamaya ve anahtar teslim
             projeye kadar uçtan uca çözüm sunmayı hedefliyoruz.
@@ -29,7 +29,7 @@ export default function HakkimizdaPage() {
           <p className="mt-6 text-lg leading-relaxed text-muted">
             Önce Türkiye pazarına odaklanıyoruz; sulamayı ölçülebilir, otomatik ve
             kârlı hale getirerek su, enerji ve girdi maliyetlerini düşürmeyi
-            amaçlıyoruz. Filizlen ekosistemi sahada aktif olarak çalışıyor; farklı
+            amaçlıyoruz. filizlen.io ekosistemi sahada aktif olarak çalışıyor; farklı
             işletme tiplerinde operasyonel kurulumları ölçekliyoruz.
           </p>
         </div>

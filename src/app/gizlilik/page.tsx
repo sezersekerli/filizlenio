@@ -18,8 +18,8 @@ export default function GizlilikPage() {
       <AnimatedSection>
         <div className="mx-auto max-w-3xl space-y-6 px-6 text-sm leading-relaxed text-muted">
           <p>
-            <strong className="text-foreground">Veri sorumlusu:</strong> Filizlen
-            (filizlen.io). İletişim: {site.email}
+            <strong className="text-foreground">Veri sorumlusu:</strong> {site.domain}.
+            İletişim: {site.email}
           </p>
           <p>
             İletişim formu aracılığıyla toplanan ad, kurum, e-posta, telefon ve mesaj
