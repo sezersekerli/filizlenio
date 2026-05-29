@@ -2,8 +2,8 @@ from PIL import Image
 import os
 
 src = "/home/sezer/.cursor/projects/home-sezer-projects-filizlenio/assets/image-482536de-526e-4ecf-8815-000732d88c0a.png"
-out = "/home/sezer/projects/filizlenio/public/brand"
-app_icon = "/home/sezer/projects/filizlenio/src/app/icon.png"
+out = "/home/sezer/projects/filizlenio/apps/marketing/public/brand"
+app_icon = "/home/sezer/projects/filizlenio/apps/marketing/src/app/icon.png"
 
 img = Image.open(src).convert("RGBA")
 w, h = img.size

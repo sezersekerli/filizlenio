@@ -1,0 +1,30 @@
+{
+  "name": "@filizlen/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "lint": "tsc --noEmit",
+    "migrate": "tsx scripts/migrate.ts"
+  },
+  "dependencies": {
+    "@filizlen/shared": "workspace:*",
+    "@hono/node-server": "^1.14.3",
+    "bcryptjs": "^3.0.2",
+    "hono": "^4.7.10",
+    "jose": "^6.0.11",
+    "pg": "^8.16.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/geojson": "^7946.0.16",
+    "@types/node": "^20",
+    "@types/pg": "^8.15.2",
+    "tsx": "^4.19.4",
+    "typescript": "^5"
+  }
+}

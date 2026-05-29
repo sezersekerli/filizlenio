@@ -9,11 +9,12 @@ CERT_PATH="/etc/letsencrypt/live/filizlen.io/fullchain.pem"
 echo "==> Building Next.js..."
 cd "$PROJECT_DIR"
 export PATH="/usr/bin:$PATH"
-npm run build
+npm exec pnpm@9.15.0 install
+npm exec pnpm@9.15.0 run build:marketing
 
 echo "==> Installing systemd service..."
 sudo cp "$PROJECT_DIR/deploy/filizlenio.service" /etc/systemd/system/filizlenio.service
-sudo sed -i 's|npm run start -- -p 3010 -H 127.0.0.1|npm run start:prod|' /etc/systemd/system/filizlenio.service
+sudo sed -i 's|npm run start:prod|npm run start:marketing|' /etc/systemd/system/filizlenio.service || true
 sudo systemctl daemon-reload
 sudo systemctl enable filizlenio
 sudo systemctl restart filizlenio

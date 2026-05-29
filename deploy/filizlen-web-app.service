@@ -1,0 +1,16 @@
+[Unit]
+Description=Filizlen product web app (app.filizlen.io)
+After=network.target
+
+[Service]
+Type=simple
+User=sezer
+Group=sezer
+WorkingDirectory=/home/sezer/projects/filizlenio/apps/web-app
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/npm run start:prod
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

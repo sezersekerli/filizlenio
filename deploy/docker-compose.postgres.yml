@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: filizlen-postgres
+    restart: unless-stopped
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: filizlen
+      POSTGRES_PASSWORD: filizlen_dev_2026
+      POSTGRES_DB: filizlen
+    volumes:
+      - filizlen_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U filizlen -d filizlen"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  filizlen_pg_data:

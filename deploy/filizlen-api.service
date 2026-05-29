@@ -1,0 +1,18 @@
+[Unit]
+Description=Filizlen API (Hono)
+After=network.target
+
+[Service]
+Type=simple
+User=sezer
+Group=sezer
+WorkingDirectory=/home/sezer/projects/filizlenio/services/api
+Environment=NODE_ENV=production
+EnvironmentFile=/home/sezer/projects/filizlenio/services/api/.env
+Environment=PATH=/usr/bin:/usr/local/bin
+ExecStart=/usr/bin/node dist/index.js
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

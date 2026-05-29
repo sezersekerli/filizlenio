@@ -1,14 +1,13 @@
 [Unit]
-Description=Filizlen.io Next.js Application
+Description=Filizlen.io Marketing Site (Next.js)
 After=network.target
 
 [Service]
 Type=simple
 User=sezer
 Group=sezer
-WorkingDirectory=/home/sezer/projects/filizlenio
+WorkingDirectory=/home/sezer/projects/filizlenio/apps/marketing
 Environment=NODE_ENV=production
-Environment=PORT=3010
 ExecStart=/usr/bin/npm run start:prod
 Restart=on-failure
 RestartSec=5

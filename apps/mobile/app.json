@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "Filizlen",
+    "slug": "filizlen",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "filizlen",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "backgroundColor": "#0a120e"
+    },
+    "android": {
+      "package": "io.filizlen.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#0a120e"
+      }
+    },
+    "plugins": ["expo-router"]
+  }
+}
