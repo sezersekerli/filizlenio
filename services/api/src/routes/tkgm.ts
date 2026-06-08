@@ -1,7 +1,23 @@
 import { Hono } from "hono";
-import { fetchIlceler, fetchMahalleler, fetchParselGeoJson } from "../lib/tkgm.js";
+import {
+  extractParselFields,
+  fetchIlceler,
+  fetchIller,
+  fetchMahalleler,
+  fetchParselGeoJson,
+} from "../lib/tkgm.js";
 
 export const tkgmRoutes = new Hono();
+
+tkgmRoutes.get("/iller", async (c) => {
+  try {
+    const data = await fetchIller();
+    return c.json(data);
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "TKGM error";
+    return c.json({ error: message }, 502);
+  }
+});
 
 tkgmRoutes.get("/ilceler/:ilId", async (c) => {
   const ilId = Number(c.req.param("ilId"));
@@ -40,7 +56,22 @@ tkgmRoutes.get("/parsel/:mahalleId/:ada/:parsel", async (c) => {
   }
   try {
     const feature = await fetchParselGeoJson(mahalleId, ada, parsel);
-    return c.json(feature);
+    const meta = extractParselFields(feature);
+    return c.json({
+      ...feature,
+      meta: {
+        area_m2: meta.area_m2,
+        nitelik: meta.nitelik,
+        location: {
+          il: meta.properties.ilAd ?? null,
+          ilce: meta.properties.ilceAd ?? null,
+          mahalle: meta.properties.mahalleAd ?? null,
+        },
+        ozet: meta.properties.ozet ?? null,
+        pafta: meta.properties.pafta ?? null,
+        zeminKmdurum: meta.properties.zeminKmdurum ?? null,
+      },
+    });
   } catch (e) {
     const message = e instanceof Error ? e.message : "TKGM error";
     return c.json({ error: message }, 502);

@@ -3,14 +3,16 @@
 import { ParcelMap } from "@/components/map/ParcelMapDynamic";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { TkgmParcelInfo } from "@/components/parcels/TkgmParcelInfo";
 import { getApiClient } from "@/lib/api";
-import { ILLER } from "@/lib/iller";
 import { defaultTransition, fadeInUp } from "@/lib/motion";
-import { TKGM_DISCLAIMER } from "@filizlen/shared";
+import { parseTkgmAreaM2, TKGM_DISCLAIMER } from "@filizlen/shared";
+import type { TkgmParselProperties } from "@filizlen/shared";
+import type { TkgmParselResponse } from "@filizlen/api-client";
 import { motion } from "framer-motion";
 import { Loader2, Map, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const steps = ["Konum", "Ada/Parsel", "Harita"];
 
@@ -26,12 +28,17 @@ export function ParcelForm() {
   const [label, setLabel] = useState("");
   const [ilceler, setIlceler] = useState<{ id: number; ad: string }[]>([]);
   const [mahalleler, setMahalleler] = useState<{ id: number; ad: string }[]>([]);
-  const [preview, setPreview] = useState<GeoJSON.Feature | null>(null);
+  const [iller, setIller] = useState<{ id: number; ad: string }[]>([]);
+  const [preview, setPreview] = useState<TkgmParselResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const stepIndex =
     preview ? 2 : mahalleId && ada && parselNo ? 1 : ilId ? 0 : 0;
+
+  useEffect(() => {
+    api.getIller().then(setIller).catch(() => setIller([]));
+  }, [api]);
 
   const loadIlceler = useCallback(
     async (id: number) => {
@@ -91,24 +98,25 @@ export function ParcelForm() {
               }
             : undefined;
 
-      const props = preview?.properties as Record<string, unknown> | undefined;
+      const props = (preview?.properties ?? {}) as TkgmParselProperties;
+      const areaFromMeta = preview?.meta?.area_m2 ?? parseTkgmAreaM2(props.alan);
 
       await api.createParcel({
         label: label || undefined,
-        il_id: Number(ilId),
-        ilce_id: Number(ilceId),
-        mahalle_id: Number(mahalleId),
-        ada,
-        parsel_no: parselNo,
+        il_id: Number(props.ilId ?? ilId),
+        ilce_id: Number(props.ilceId ?? ilceId),
+        mahalle_id: Number(props.mahalleId ?? mahalleId),
+        ada: String(props.adaNo ?? ada),
+        parsel_no: String(props.parselNo ?? parselNo),
         geometry: geometry
           ? {
               type: "Polygon" as const,
               coordinates: geometry.coordinates as [number, number][][],
             }
           : null,
-        area_m2: props?.alan ? Number(String(props.alan).replace(/,/g, "")) : null,
-        nitelik: (props?.nitelik as string) ?? null,
-        properties: props ?? null,
+        area_m2: areaFromMeta,
+        nitelik: preview?.meta?.nitelik ?? props.nitelik ?? null,
+        properties: props,
       });
       router.push("/parcels");
       router.refresh();
@@ -169,7 +177,7 @@ export function ParcelForm() {
               }}
             >
               <option value="">Seçin</option>
-              {ILLER.map((il) => (
+              {iller.map((il) => (
                 <option key={il.id} value={il.id}>
                   {il.ad}
                 </option>
@@ -264,6 +272,14 @@ export function ParcelForm() {
         >
           {error}
         </motion.p>
+      )}
+
+      {preview && (
+        <TkgmParcelInfo
+          properties={preview.properties as TkgmParselProperties}
+          areaM2={preview.meta?.area_m2}
+          nitelik={preview.meta?.nitelik}
+        />
       )}
 
       <motion.div

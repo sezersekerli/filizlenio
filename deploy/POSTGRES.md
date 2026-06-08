@@ -1,6 +1,6 @@
 # Filizlen — kendi PostgreSQL + backend auth
 
-Supabase kaldırıldı. Auth ve veritabanı artık **kendi API + Postgres** üzerinde.
+Auth ve veritabanı **kendi API + Postgres** üzerinde. Migration dosyası: `services/api/migrations/001_init.sql`
 
 ## 1. Postgres başlat
 

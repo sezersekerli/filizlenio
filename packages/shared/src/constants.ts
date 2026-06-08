@@ -15,7 +15,44 @@ export const PARCEL_EVENT_TYPES = [
   "irrigation_manual",
   "planting",
   "harvest",
+  "fertilization",
+  "spray",
+  "expense_note",
+  "inspection",
 ] as const;
+
+export const FARM_TASK_TYPES = [
+  "irrigation",
+  "fertilization",
+  "spray",
+  "inspection",
+  "expense",
+  "other",
+] as const;
+
+export const EXPENSE_CATEGORIES = [
+  "fuel",
+  "fertilizer",
+  "pesticide",
+  "labor",
+  "seed",
+  "irrigation",
+  "transport",
+  "other",
+] as const;
+
+export const TASK_PRIORITIES = ["low", "normal", "high"] as const;
+
+export const TASK_STATUSES = ["pending", "completed", "cancelled"] as const;
+
+export const NOTIFICATION_STATUSES = ["draft", "scheduled", "sent", "failed"] as const;
+
+export const PLAN_LABELS: Record<string, string> = {
+  free: "Ücretsiz",
+  sense: "Sense",
+  cloud: "Cloud",
+  control: "Control",
+};
 
 export const ENTITLEMENT_FEATURES = [
   "sense_live",
@@ -48,4 +85,4 @@ export const TKGM_DISCLAIMER =
   "Bilgilendirme amaçlıdır; resmi işlem için TKGM'ye başvurun.";
 
 export const DEFAULT_TKGM_API_BASE =
-  "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1";
+  "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api";

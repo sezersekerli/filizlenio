@@ -1,8 +1,9 @@
 "use client";
 
 import { PRODUCT_PACKAGES } from "@filizlen/shared";
+import type { Entitlement } from "@filizlen/shared";
 import { motion } from "framer-motion";
-import { Cloud, Lock, Radio, SlidersHorizontal } from "lucide-react";
+import { CheckCircle2, Cloud, Lock, Radio, SlidersHorizontal } from "lucide-react";
 import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +19,17 @@ const STYLES = {
   control: "package-card-control border-green-800/40",
 } as const;
 
-export function UpsellCards({ compact }: { compact?: boolean }) {
+export function UpsellCards({
+  compact,
+  entitlements = [],
+}: {
+  compact?: boolean;
+  entitlements?: Entitlement[];
+}) {
+  const activeFeatures = new Set(
+    entitlements.filter((e) => e.active).map((e) => e.feature),
+  );
+
   return (
     <motion.div
       initial="hidden"
@@ -29,6 +40,7 @@ export function UpsellCards({ compact }: { compact?: boolean }) {
     >
       {PRODUCT_PACKAGES.map((pkg) => {
         const Icon = ICONS[pkg.id as keyof typeof ICONS] ?? Radio;
+        const unlocked = activeFeatures.has(pkg.feature);
         return (
           <motion.div
             key={pkg.id}
@@ -37,10 +49,15 @@ export function UpsellCards({ compact }: { compact?: boolean }) {
             className={cn(
               "relative rounded-2xl border p-6 overflow-hidden group",
               STYLES[pkg.id as keyof typeof STYLES],
+              unlocked && "border-primary/40",
             )}
           >
             <div className="absolute top-4 right-4 text-muted/80">
-              <Lock className="w-4 h-4" />
+              {unlocked ? (
+                <CheckCircle2 className="w-4 h-4 text-primary" />
+              ) : (
+                <Lock className="w-4 h-4" />
+              )}
             </div>
             <div className="brand-icon-box w-11 h-11 mb-4 group-hover:scale-105 transition-transform">
               <Icon className="w-5 h-5" />
@@ -48,7 +65,7 @@ export function UpsellCards({ compact }: { compact?: boolean }) {
             <h3 className="font-bold text-lg text-highlight">{pkg.name}</h3>
             <p className="text-sm text-muted mt-2 leading-relaxed">{pkg.description}</p>
             <p className="text-xs text-primary/90 mt-5 font-medium">
-              Yakında — ödeme entegrasyonu
+              {unlocked ? "Paket aktif" : "Yakında — ödeme entegrasyonu"}
             </p>
           </motion.div>
         );

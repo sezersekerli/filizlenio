@@ -4,8 +4,10 @@ import { Logo } from "@/components/brand/Logo";
 import { AppBackground } from "@/components/effects/AppBackground";
 import { logoutUser } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
+import { PLAN_LABELS } from "@filizlen/shared";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  CalendarCheck,
   LayoutDashboard,
   LogOut,
   Map,
@@ -19,6 +21,7 @@ import { useState } from "react";
 
 const nav = [
   { href: "/dashboard", label: "Panel", icon: LayoutDashboard },
+  { href: "/farm", label: "Tarla yönetimi", icon: CalendarCheck },
   { href: "/parcels", label: "Parseller", icon: Map },
   { href: "/packages", label: "Paketler", icon: Package },
 ];
@@ -70,9 +73,11 @@ function NavLinks({
 export function AppShell({
   children,
   displayName,
+  plan = "free",
 }: {
   children: React.ReactNode;
   displayName?: string | null;
+  plan?: string;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -92,6 +97,8 @@ export function AppShell({
         .slice(0, 2)
         .toUpperCase()
     : "FL";
+
+  const planLabel = PLAN_LABELS[plan] ?? plan;
 
   return (
     <div className="min-h-screen relative">
@@ -121,7 +128,7 @@ export function AppShell({
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-medium truncate">{displayName ?? "Kullanıcı"}</p>
-                  <p className="text-[10px] text-muted">Ücretsiz plan</p>
+                  <p className="text-[10px] text-muted">{planLabel} plan</p>
                 </div>
               </div>
               <button

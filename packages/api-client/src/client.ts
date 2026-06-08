@@ -1,8 +1,39 @@
 import type {
+  CreateExpenseInput,
+  CreateFarmTaskInput,
+  CreateNotificationInput,
   CreateParcelEventInput,
   CreateParcelInput,
+  Entitlement,
+  Expense,
+  FarmSummary,
+  FarmTask,
+  NotificationMessage,
+  Parcel,
+  ParcelEvent,
+  ParcelSeason,
+  TkgmIl,
+  TkgmIlce,
+  TkgmMahalle,
+  UpdateFarmTaskInput,
+  UpsertParcelSeasonInput,
+  WeatherSnapshot,
 } from "@filizlen/shared";
-import type { Parcel, ParcelEvent, TkgmIlce, TkgmMahalle } from "@filizlen/shared";
+
+export interface TkgmParselMeta {
+  area_m2: number | null;
+  nitelik: string | null;
+  location: {
+    il: string | null;
+    ilce: string | null;
+    mahalle: string | null;
+  };
+  ozet: string | null;
+  pafta: string | null;
+  zeminKmdurum: string | null;
+}
+
+export type TkgmParselResponse = GeoJSON.Feature & { meta?: TkgmParselMeta };
 
 export interface ApiClientConfig {
   baseUrl: string;
@@ -49,6 +80,10 @@ export class FilizlenApiClient {
     return this.request<{ status: string; service: string }>("/health");
   }
 
+  getIller() {
+    return this.request<TkgmIl[]>("/tkgm/iller");
+  }
+
   getIlceler(ilId: number) {
     return this.request<TkgmIlce[]>(`/tkgm/ilceler/${ilId}`);
   }
@@ -58,9 +93,13 @@ export class FilizlenApiClient {
   }
 
   getParselGeoJson(mahalleId: number, ada: string, parsel: string) {
-    return this.request<GeoJSON.Feature>(
+    return this.request<TkgmParselResponse>(
       `/tkgm/parsel/${mahalleId}/${encodeURIComponent(ada)}/${encodeURIComponent(parsel)}`,
     );
+  }
+
+  syncParcelTkgm(id: string) {
+    return this.request<Parcel>(`/parcels/${id}/tkgm/sync`, { method: "POST" });
   }
 
   listParcels() {
@@ -91,5 +130,73 @@ export class FilizlenApiClient {
       method: "POST",
       body: JSON.stringify(data),
     });
+  }
+
+  getFarmSummary() {
+    return this.request<FarmSummary>("/farm/summary");
+  }
+
+  listFarmTasks(date?: string) {
+    const q = date ? `?date=${encodeURIComponent(date)}` : "";
+    return this.request<FarmTask[]>(`/farm/tasks${q}`);
+  }
+
+  createFarmTask(data: CreateFarmTaskInput) {
+    return this.request<FarmTask>("/farm/tasks", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  updateFarmTask(id: string, data: UpdateFarmTaskInput) {
+    return this.request<FarmTask>(`/farm/tasks/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    });
+  }
+
+  listNotifications() {
+    return this.request<NotificationMessage[]>("/farm/notifications");
+  }
+
+  previewNotification(data: CreateNotificationInput) {
+    return this.request<NotificationMessage>("/farm/notifications/preview", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  getParcelSeason(parcelId: string) {
+    return this.request<ParcelSeason | null>(`/parcels/${parcelId}/season`);
+  }
+
+  upsertParcelSeason(parcelId: string, data: UpsertParcelSeasonInput) {
+    return this.request<ParcelSeason>(`/parcels/${parcelId}/season`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  listParcelExpenses(parcelId: string) {
+    return this.request<Expense[]>(`/parcels/${parcelId}/expenses`);
+  }
+
+  createExpense(parcelId: string, data: CreateExpenseInput) {
+    return this.request<Expense>(`/parcels/${parcelId}/expenses`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  getParcelWeather(parcelId: string) {
+    return this.request<WeatherSnapshot>(`/parcels/${parcelId}/weather`);
+  }
+
+  listParcelTasks(parcelId: string) {
+    return this.request<FarmTask[]>(`/parcels/${parcelId}/tasks`);
+  }
+
+  listEntitlements() {
+    return this.request<Entitlement[]>("/entitlements");
   }
 }

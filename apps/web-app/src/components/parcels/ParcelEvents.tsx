@@ -5,7 +5,7 @@ import { defaultTransition, fadeInUp, staggerContainer } from "@/lib/motion";
 import type { ParcelEvent } from "@filizlen/shared";
 import { PARCEL_EVENT_TYPES } from "@filizlen/shared";
 import { motion } from "framer-motion";
-import { Calendar, Droplets, MessageSquare, Sprout, Wheat } from "lucide-react";
+import { Calendar, Droplets, MessageSquare, Search, Shield, Sprout, Wallet, Wheat } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 
@@ -17,6 +17,10 @@ const TYPE_META: Record<
   irrigation_manual: { label: "Sulama", icon: Droplets, color: "text-blue-400" },
   planting: { label: "Ekim", icon: Sprout, color: "text-primary" },
   harvest: { label: "Hasat", icon: Wheat, color: "text-amber-400" },
+  fertilization: { label: "Gübreleme", icon: Sprout, color: "text-emerald-400" },
+  spray: { label: "İlaçlama", icon: Shield, color: "text-violet-400" },
+  expense_note: { label: "Masraf notu", icon: Wallet, color: "text-orange-400" },
+  inspection: { label: "Kontrol", icon: Search, color: "text-cyan-400" },
 };
 
 export function ParcelEvents({ parcelId }: { parcelId: string }) {

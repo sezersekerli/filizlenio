@@ -1,15 +1,14 @@
 import { DashboardView } from "@/components/dashboard/DashboardView";
-import { getServerApiClient } from "@/lib/api-server";
+import { fetchParcels } from "@/lib/fetch-parcels";
+import { getSessionUser } from "@/lib/auth/server";
 
 export default async function DashboardPage() {
-  let parcels: Awaited<ReturnType<Awaited<ReturnType<typeof getServerApiClient>>["listParcels"]>> = [];
-  let error: string | null = null;
+  const [user, { parcels, error }] = await Promise.all([
+    getSessionUser(),
+    fetchParcels(),
+  ]);
 
-  try {
-    parcels = await (await getServerApiClient()).listParcels();
-  } catch (e) {
-    error = e instanceof Error ? e.message : "Parseller yüklenemedi";
-  }
-
-  return <DashboardView parcels={parcels} error={error} />;
+  return (
+    <DashboardView parcels={parcels} error={error} plan={user?.plan ?? "free"} />
+  );
 }

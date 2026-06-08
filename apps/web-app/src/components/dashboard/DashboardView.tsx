@@ -1,32 +1,28 @@
 "use client";
 
+import { ApiErrorBanner } from "@/components/ui/ApiErrorBanner";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { ParcelCard } from "@/components/ui/ParcelCard";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { StatCard } from "@/components/ui/StatCard";
 import { ButtonLink } from "@/components/ui/Button";
-import { PLAN_LIMITS } from "@filizlen/shared";
+import { PLAN_LABELS, PLAN_LIMITS } from "@filizlen/shared";
+import type { Parcel } from "@filizlen/shared";
 import { motion } from "framer-motion";
-import { MapPin, Plus, Sprout, TrendingUp } from "lucide-react";
+import { MapPin, Plus } from "lucide-react";
 import { staggerContainer } from "@/lib/motion";
-
-type Parcel = {
-  id: string;
-  label: string | null;
-  ada: string;
-  parsel_no: string;
-  nitelik: string | null;
-  area_m2: number | null;
-};
 
 export function DashboardView({
   parcels,
   error,
+  plan = "free",
 }: {
   parcels: Parcel[];
   error: string | null;
+  plan?: string;
 }) {
   const limit = PLAN_LIMITS.free.maxParcels;
   const usedPct = Math.min(100, Math.round((parcels.length / limit) * 100));
+  const planLabel = PLAN_LABELS[plan] ?? plan;
 
   return (
     <div className="space-y-10">
@@ -50,37 +46,20 @@ export function DashboardView({
         variants={staggerContainer}
         className="grid gap-4 sm:grid-cols-3"
       >
-        <StatCard
+        <StatCardInline
           label="Kayıtlı parsel"
-          value={parcels.length}
-          sub={`Ücretsiz limit: ${limit}`}
-          icon={MapPin}
+          value={String(parcels.length)}
+          sub={`Limit: ${limit}`}
         />
-        <StatCard
+        <StatCardInline
           label="Kullanım"
           value={`%${usedPct}`}
           sub={parcels.length >= limit ? "Limit doldu" : `${limit - parcels.length} hak kaldı`}
-          icon={TrendingUp}
-          accent="accent"
         />
-        <StatCard
-          label="Plan"
-          value="Ücretsiz"
-          sub="Sense · Cloud · Control"
-          icon={Sprout}
-        />
+        <StatCardInline label="Plan" value={planLabel} sub="Sense · Cloud · Control" />
       </motion.div>
 
-      {error && (
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass-card glow-border rounded-2xl p-5 text-sm border-amber-500/30"
-        >
-          <p className="text-amber-300 font-medium">API bağlantısı kurulamadı</p>
-          <p className="text-muted mt-1 text-xs">{error}</p>
-        </motion.div>
-      )}
+      {error && <ApiErrorBanner message={error} />}
 
       <section>
         <div className="flex items-center justify-between mb-5">
@@ -91,28 +70,17 @@ export function DashboardView({
         </div>
 
         {parcels.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="glass-card glow-border rounded-3xl p-12 md:p-16 text-center relative overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
-            <motion.div
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="relative"
-            >
-              <MapPin className="w-14 h-14 text-primary mx-auto mb-5 opacity-80" />
-            </motion.div>
-            <h3 className="text-xl font-semibold relative">Henüz parsel yok</h3>
-            <p className="text-muted text-sm mt-2 mb-8 max-w-sm mx-auto relative">
-              İl, ilçe, mahalle ve ada/parsel bilgisiyle tarlanızı haritaya ekleyin.
-            </p>
-            <ButtonLink href="/parcels/new" size="lg">
-              <Plus className="w-4 h-4" />
-              İlk parseli ekle
-            </ButtonLink>
-          </motion.div>
+          <EmptyState
+            icon={MapPin}
+            title="Henüz parsel yok"
+            description="İl, ilçe, mahalle ve ada/parsel bilgisiyle tarlanızı haritaya ekleyin."
+            action={
+              <ButtonLink href="/parcels/new" size="lg">
+                <Plus className="w-4 h-4" />
+                İlk parseli ekle
+              </ButtonLink>
+            }
+          />
         ) : (
           <motion.ul
             initial="hidden"
@@ -126,6 +94,32 @@ export function DashboardView({
           </motion.ul>
         )}
       </section>
+
+      {parcels.length > 0 && (
+        <div className="text-center">
+          <ButtonLink href="/farm" variant="ghost">
+            Tarla yönetimi paneline git →
+          </ButtonLink>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StatCardInline({
+  label,
+  value,
+  sub,
+}: {
+  label: string;
+  value: string;
+  sub: string;
+}) {
+  return (
+    <div className="glass-card glow-border rounded-2xl p-5">
+      <p className="text-xs text-muted uppercase tracking-wide">{label}</p>
+      <p className="text-2xl font-bold mt-1">{value}</p>
+      <p className="text-xs text-muted mt-1">{sub}</p>
     </div>
   );
 }

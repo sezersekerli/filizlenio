@@ -110,11 +110,11 @@ export function Hero() {
             className="mt-10 flex flex-wrap gap-4"
           >
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-              <Button href="/iletisim">Demo ve teklif alın</Button>
+              <Button href="https://app.filizlen.io/farm">Tarla panelini aç</Button>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-              <Button href="/cozum" variant="secondary">
-                Çözümü keşfedin
+              <Button href="/iletisim" variant="secondary">
+                Demo ve teklif alın
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </motion.div>

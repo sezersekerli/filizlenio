@@ -1,23 +1,23 @@
 "use client";
 
+import { ApiErrorBanner } from "@/components/ui/ApiErrorBanner";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { ParcelCard } from "@/components/ui/ParcelCard";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ButtonLink } from "@/components/ui/Button";
 import { PLAN_LIMITS } from "@filizlen/shared";
+import type { Parcel } from "@filizlen/shared";
 import { motion } from "framer-motion";
-import { Plus } from "lucide-react";
+import { MapPin, Plus } from "lucide-react";
 import { staggerContainer } from "@/lib/motion";
 
-type Parcel = {
-  id: string;
-  label: string | null;
-  ada: string;
-  parsel_no: string;
-  nitelik: string | null;
-  area_m2: number | null;
-};
-
-export function ParcelsListView({ parcels }: { parcels: Parcel[] }) {
+export function ParcelsListView({
+  parcels,
+  error,
+}: {
+  parcels: Parcel[];
+  error?: string | null;
+}) {
   const atLimit = parcels.length >= PLAN_LIMITS.free.maxParcels;
 
   return (
@@ -36,6 +36,8 @@ export function ParcelsListView({ parcels }: { parcels: Parcel[] }) {
         }
       />
 
+      {error && <ApiErrorBanner message={error} />}
+
       {atLimit && (
         <motion.p
           initial={{ opacity: 0 }}
@@ -48,9 +50,19 @@ export function ParcelsListView({ parcels }: { parcels: Parcel[] }) {
       )}
 
       {parcels.length === 0 ? (
-        <div className="glass-card glow-border rounded-2xl p-10 text-center text-muted text-sm">
-          Henüz parsel eklenmedi.
-        </div>
+        <EmptyState
+          icon={MapPin}
+          title="Henüz parsel eklenmedi"
+          description="TKGM ada/parsel bilgisiyle ilk tarlanızı kaydedin."
+          action={
+            !atLimit ? (
+              <ButtonLink href="/parcels/new" size="lg">
+                <Plus className="w-4 h-4" />
+                Parsel ekle
+              </ButtonLink>
+            ) : undefined
+          }
+        />
       ) : (
         <motion.ul
           initial="hidden"

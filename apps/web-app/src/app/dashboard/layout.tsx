@@ -11,7 +11,7 @@ export default async function DashboardLayout({
   if (!user) redirect("/login");
 
   return (
-    <AppShell displayName={user.displayName ?? user.email}>
+    <AppShell displayName={user.displayName ?? user.email} plan={user.plan ?? "free"}>
       {children}
     </AppShell>
   );

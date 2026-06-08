@@ -1,14 +1,7 @@
 import { ParcelsListView } from "@/components/parcels/ParcelsListView";
-import { getServerApiClient } from "@/lib/api-server";
+import { fetchParcels } from "@/lib/fetch-parcels";
 
 export default async function ParcelsPage() {
-  let parcels: Awaited<ReturnType<Awaited<ReturnType<typeof getServerApiClient>>["listParcels"]>> = [];
-
-  try {
-    parcels = await (await getServerApiClient()).listParcels();
-  } catch {
-    parcels = [];
-  }
-
-  return <ParcelsListView parcels={parcels} />;
+  const { parcels, error } = await fetchParcels();
+  return <ParcelsListView parcels={parcels} error={error} />;
 }

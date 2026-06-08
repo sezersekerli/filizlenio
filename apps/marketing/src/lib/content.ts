@@ -50,8 +50,8 @@ export const navLinks = [
   { href: "/yatirimcilar", label: "Yatırımcılar" },
   { href: "/iletisim", label: "İletişim" },
   {
-    href: "https://app.filizlen.io/login",
-    label: "Uygulamaya git",
+    href: "https://app.filizlen.io/farm",
+    label: "Tarla paneli",
     external: true,
   },
 ];

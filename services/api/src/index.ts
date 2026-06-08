@@ -5,6 +5,8 @@ import { logger } from "hono/logger";
 import { getEnv } from "./env.js";
 import { authMiddleware } from "./middleware/auth.js";
 import { authRoutes } from "./routes/auth.js";
+import { entitlementsRoutes } from "./routes/entitlements.js";
+import { farmRoutes, parcelFarmRoutes } from "./routes/farm.js";
 import { parcelsRoutes } from "./routes/parcels.js";
 import { tkgmRoutes } from "./routes/tkgm.js";
 
@@ -22,7 +24,7 @@ app.use(
       "http://localhost:8081",
     ],
     allowHeaders: ["Authorization", "Content-Type"],
-    allowMethods: ["GET", "POST", "DELETE", "OPTIONS"],
+    allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
   }),
 );
@@ -42,6 +44,9 @@ app.route("/tkgm", tkgmRoutes);
 const protectedRoutes = new Hono();
 protectedRoutes.use("*", authMiddleware);
 protectedRoutes.route("/parcels", parcelsRoutes);
+protectedRoutes.route("/parcels", parcelFarmRoutes);
+protectedRoutes.route("/farm", farmRoutes);
+protectedRoutes.route("/entitlements", entitlementsRoutes);
 app.route("/", protectedRoutes);
 
 const port = Number(process.env.PORT ?? 3012);

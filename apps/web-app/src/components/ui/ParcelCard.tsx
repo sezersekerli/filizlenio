@@ -1,6 +1,7 @@
 "use client";
 
 import { defaultTransition, fadeInUp } from "@/lib/motion";
+import { formatParcelArea, formatParcelLocation } from "@/lib/tkgm-display";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { ArrowUpRight, MapPin } from "lucide-react";
@@ -13,6 +14,7 @@ type ParcelSummary = {
   parsel_no: string;
   nitelik: string | null;
   area_m2: number | null;
+  properties?: Record<string, unknown> | null;
 };
 
 export function ParcelCard({
@@ -25,6 +27,8 @@ export function ParcelCard({
   variant?: "grid" | "list";
 }) {
   const title = parcel.label || `Ada ${parcel.ada} / ${parcel.parsel_no}`;
+  const location = formatParcelLocation(parcel.properties);
+  const area = formatParcelArea(parcel.area_m2 ? Number(parcel.area_m2) : null);
 
   return (
     <motion.li
@@ -49,8 +53,8 @@ export function ParcelCard({
               </p>
             </div>
             <p className="text-xs text-muted mt-3 pl-10">
-              {parcel.nitelik ?? "Parsel"}
-              {parcel.area_m2 ? ` · ${parcel.area_m2.toLocaleString("tr-TR")} m²` : ""}
+              {location ?? parcel.nitelik ?? "Parsel"}
+              {area ? ` · ${area}` : ""}
             </p>
           </div>
           <ArrowUpRight className="w-4 h-4 text-muted group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0 mt-1" />
