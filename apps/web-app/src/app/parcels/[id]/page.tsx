@@ -1,28 +1,8 @@
-import { ParcelMap } from "@/components/map/ParcelMapDynamic";
-import { ParcelEvents } from "@/components/parcels/ParcelEvents";
-import { ParcelDetailTabs } from "@/components/parcels/ParcelDetailTabs";
-import { TkgmParcelInfo } from "@/components/parcels/TkgmParcelInfo";
-import { UpsellCards } from "@/components/packages/UpsellCards";
-import { ParcelDetailHeader } from "@/components/parcels/ParcelDetailHeader";
-import { getServerApiClient } from "@/lib/api-server";
-import { TKGM_DISCLAIMER } from "@filizlen/shared";
-import type { TkgmParselProperties } from "@filizlen/shared";
-import { notFound } from "next/navigation";
-
-function parseGeometry(geometry: unknown): GeoJSON.Polygon | null {
-  if (!geometry) return null;
-  if (typeof geometry === "string") {
-    try {
-      return JSON.parse(geometry) as GeoJSON.Polygon;
-    } catch {
-      return null;
-    }
-  }
-  if (typeof geometry === "object" && (geometry as GeoJSON.Polygon).type === "Polygon") {
-    return geometry as GeoJSON.Polygon;
-  }
-  return null;
-}
+import { ParcelHubCards } from "@/components/parcels/ParcelHubCards";
+import { ParcelOverviewStrip } from "@/components/parcels/ParcelOverviewStrip";
+import Link from "next/link";
+import { ArrowRight, Map } from "lucide-react";
+import { Suspense } from "react";
 
 export default async function ParcelDetailPage({
   params,
@@ -30,57 +10,30 @@ export default async function ParcelDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  let parcel;
-  let entitlements: Awaited<
-    ReturnType<Awaited<ReturnType<typeof getServerApiClient>>["listEntitlements"]>
-  > = [];
-
-  try {
-    const api = await getServerApiClient();
-    parcel = await api.getParcel(id);
-    try {
-      entitlements = await api.listEntitlements();
-    } catch {
-      entitlements = [];
-    }
-  } catch {
-    notFound();
-  }
-
-  const geom = parseGeometry(parcel.geometry);
-  const title = parcel.label || `Ada ${parcel.ada} / ${parcel.parsel_no}`;
 
   return (
-    <div className="space-y-10">
-      <ParcelDetailHeader
-        parcelId={id}
-        title={title}
-        nitelik={parcel.nitelik}
-        areaM2={parcel.area_m2 ? Number(parcel.area_m2) : null}
-        ada={parcel.ada}
-        parselNo={parcel.parsel_no}
-        properties={parcel.properties}
-      />
+    <div className="space-y-5 md:space-y-8">
+      <Link
+        href={`/parcels/${id}/harita`}
+        className="glass-card rounded-2xl p-4 sm:p-6 flex items-center gap-4 hover:border-primary/30 active:scale-[0.99] transition-transform block min-h-[72px]"
+      >
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
+          <Map className="h-6 w-6" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold">Haritayı aç</p>
+          <p className="text-xs text-muted mt-0.5">Uydu görüntüsü ve parsel sınırı</p>
+        </div>
+        <ArrowRight className="h-4 w-4 text-muted shrink-0" />
+      </Link>
 
-      <TkgmParcelInfo
-        properties={parcel.properties as TkgmParselProperties | null}
-        areaM2={parcel.area_m2 ? Number(parcel.area_m2) : null}
-        nitelik={parcel.nitelik}
-      />
+      <Suspense fallback={<p className="text-sm text-muted">Özet yükleniyor…</p>}>
+        <ParcelOverviewStrip parcelId={id} />
+      </Suspense>
 
-      <p className="text-xs text-muted">{TKGM_DISCLAIMER}</p>
-
-      <div className="map-frame rounded-2xl overflow-hidden">
-        <ParcelMap geometry={geom} className="h-80 md:h-[420px] w-full" />
-      </div>
-
-      <ParcelDetailTabs parcelId={id} />
-
-      <ParcelEvents parcelId={id} />
-
-      <section className="space-y-5 pt-4 border-t border-[var(--card-border)]">
-        <h2 className="text-xl font-semibold text-gradient">Premium özellikler</h2>
-        <UpsellCards compact entitlements={entitlements} />
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold">Ne yapmak istiyorsunuz?</h2>
+        <ParcelHubCards parcelId={id} />
       </section>
     </div>
   );

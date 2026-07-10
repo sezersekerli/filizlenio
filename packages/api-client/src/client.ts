@@ -6,12 +6,19 @@ import type {
   CreateParcelInput,
   Entitlement,
   Expense,
+  ExpenseWithParcel,
+  FarmActivityItem,
   FarmSummary,
   FarmTask,
   NotificationMessage,
+  NotificationSettings,
+  UpdateNotificationSettingsInput,
   Parcel,
   ParcelEvent,
+  ParcelEventWithParcel,
   ParcelSeason,
+  SpectralTimeline,
+  SpectralTimelineBucket,
   TkgmIl,
   TkgmIlce,
   TkgmMahalle,
@@ -136,9 +143,29 @@ export class FilizlenApiClient {
     return this.request<FarmSummary>("/farm/summary");
   }
 
-  listFarmTasks(date?: string) {
-    const q = date ? `?date=${encodeURIComponent(date)}` : "";
-    return this.request<FarmTask[]>(`/farm/tasks${q}`);
+  listFarmExpenses() {
+    return this.request<ExpenseWithParcel[]>("/farm/expenses");
+  }
+
+  listFarmEvents() {
+    return this.request<ParcelEventWithParcel[]>("/farm/events");
+  }
+
+  listFarmTasks(params?: { status?: string; scope?: string; date?: string }) {
+    const search = new URLSearchParams();
+    if (params?.status) search.set("status", params.status);
+    if (params?.scope) search.set("scope", params.scope);
+    if (params?.date) search.set("date", params.date);
+    const q = search.toString();
+    return this.request<FarmTask[]>(`/farm/tasks${q ? `?${q}` : ""}`);
+  }
+
+  listFarmActivity(params?: { limit?: number; before?: string }) {
+    const search = new URLSearchParams();
+    if (params?.limit != null) search.set("limit", String(params.limit));
+    if (params?.before) search.set("before", params.before);
+    const q = search.toString();
+    return this.request<FarmActivityItem[]>(`/farm/activity${q ? `?${q}` : ""}`);
   }
 
   createFarmTask(data: CreateFarmTaskInput) {
@@ -157,6 +184,30 @@ export class FilizlenApiClient {
 
   listNotifications() {
     return this.request<NotificationMessage[]>("/farm/notifications");
+  }
+
+  getNotificationSettings() {
+    return this.request<NotificationSettings>("/farm/notifications/settings");
+  }
+
+  updateNotificationSettings(data: UpdateNotificationSettingsInput) {
+    return this.request<NotificationSettings>("/farm/notifications/settings", {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    });
+  }
+
+  dispatchNotifications() {
+    return this.request<{ scanned: boolean; sent: number }>(
+      "/farm/notifications/dispatch",
+      { method: "POST" },
+    );
+  }
+
+  sendNotification(id: string) {
+    return this.request<NotificationMessage>(`/farm/notifications/${id}/send`, {
+      method: "POST",
+    });
   }
 
   previewNotification(data: CreateNotificationInput) {
@@ -192,11 +243,36 @@ export class FilizlenApiClient {
     return this.request<WeatherSnapshot>(`/parcels/${parcelId}/weather`);
   }
 
-  listParcelTasks(parcelId: string) {
-    return this.request<FarmTask[]>(`/parcels/${parcelId}/tasks`);
+  listParcelTasks(parcelId: string, status?: string) {
+    const q = status ? `?status=${encodeURIComponent(status)}` : "";
+    return this.request<FarmTask[]>(`/parcels/${parcelId}/tasks${q}`);
+  }
+
+  listParcelActivity(parcelId: string, params?: { limit?: number; before?: string }) {
+    const search = new URLSearchParams();
+    if (params?.limit != null) search.set("limit", String(params.limit));
+    if (params?.before) search.set("before", params.before);
+    const q = search.toString();
+    return this.request<FarmActivityItem[]>(
+      `/parcels/${parcelId}/activity${q ? `?${q}` : ""}`,
+    );
   }
 
   listEntitlements() {
     return this.request<Entitlement[]>("/entitlements");
+  }
+
+  syncParcelSatellite(parcelId: string, force = false) {
+    const q = force ? "?force=true" : "";
+    return this.request<{ synced: number }>(
+      `/parcels/${parcelId}/satellite/sync${q}`,
+      { method: "POST" },
+    );
+  }
+
+  getParcelSpectralTimeline(parcelId: string, bucket: SpectralTimelineBucket = "week") {
+    return this.request<SpectralTimeline>(
+      `/parcels/${parcelId}/satellite/timeline?bucket=${bucket}`,
+    );
   }
 }

@@ -24,8 +24,17 @@ export interface Profile {
   display_name: string | null;
   avatar_url: string | null;
   plan: Plan;
+  whatsapp_phone?: string | null;
+  whatsapp_notifications_enabled?: boolean;
   created_at?: string;
   updated_at?: string;
+}
+
+export interface NotificationSettings {
+  whatsapp_phone: string | null;
+  whatsapp_notifications_enabled: boolean;
+  whatsapp_configured: boolean;
+  can_send: boolean;
 }
 
 export interface Parcel {
@@ -97,11 +106,29 @@ export interface FarmTask {
   status: TaskStatus;
   priority: TaskPriority;
   body: string | null;
+  completed_at?: string | null;
   created_at: string;
   updated_at?: string;
   parcel_label?: string | null;
   parcel_ada?: string;
   parcel_parsel_no?: string;
+}
+
+export type FarmActivityKind = "task_completed" | "event" | "expense";
+
+export interface FarmActivityItem {
+  id: string;
+  kind: FarmActivityKind;
+  occurred_at: string;
+  parcel_id: string;
+  parcel_label?: string | null;
+  parcel_ada?: string;
+  parcel_parsel_no?: string;
+  title: string;
+  subtitle?: string | null;
+  amount?: number | null;
+  currency?: string | null;
+  category?: string | null;
 }
 
 export interface Expense {
@@ -127,6 +154,7 @@ export interface NotificationMessage {
   scheduled_at: string | null;
   sent_at: string | null;
   provider_ref: string | null;
+  error_message?: string | null;
   created_at: string;
 }
 
@@ -135,6 +163,9 @@ export interface FarmSummary {
   parcelLimit: number;
   todayTaskCount: number;
   criticalTaskCount: number;
+  overdueTaskCount: number;
+  upcomingTaskCount: number;
+  completedThisWeekCount: number;
   riskAlertCount: number;
   seasonExpenseTotal: number;
   currency: string;
@@ -148,4 +179,93 @@ export interface WeatherSnapshot {
   wind_speed_kmh: number | null;
   risks: string[];
   summary: string;
+}
+
+export interface ExpenseWithParcel extends Expense {
+  parcel_label?: string | null;
+  parcel_ada?: string;
+  parcel_parsel_no?: string;
+}
+
+export interface ParcelEventWithParcel extends ParcelEvent {
+  parcel_label?: string | null;
+  parcel_ada?: string;
+  parcel_parsel_no?: string;
+}
+
+export type SatelliteLayer = "rgb" | "ndvi" | "ndre";
+
+export interface SatelliteIndexStats {
+  mean: number;
+  min: number;
+  max: number;
+  std: number;
+  stress_pct: number;
+  health: string;
+}
+
+export interface SatelliteSceneAnalysis {
+  ndvi: SatelliteIndexStats;
+  ndre: SatelliteIndexStats | null;
+  computed_at: string;
+  ndvi_delta: number | null;
+}
+
+export interface SatelliteScene {
+  id: string;
+  parcel_id: string;
+  provider: string;
+  scene_id: string;
+  acquired_at: string;
+  cloud_cover_pct: number | null;
+  bbox: [number, number, number, number];
+  display_bbox: [number, number, number, number];
+  bounds: [[number, number], [number, number]];
+  preview_url: string;
+  preview_width: number;
+  fetched_at: string;
+  analysis: SatelliteSceneAnalysis | null;
+}
+
+export type SatelliteAccessTier = "free" | "premium";
+export type SatelliteQuality = "preview" | "analysis";
+
+export interface SatelliteSceneList {
+  tier: SatelliteAccessTier;
+  quality: SatelliteQuality;
+  source_label: string;
+  search_days: number;
+  scenes: SatelliteScene[];
+}
+
+export interface SatelliteSyncResult extends SatelliteSceneList {
+  synced: number;
+}
+
+export type SpectralTimelineBucket = "week" | "month";
+
+export interface SpectralTimelinePoint {
+  index: number;
+  label: string;
+  ndvi_mean: number | null;
+  stress_pct: number | null;
+  scene_count: number;
+  latest_acquired_at: string | null;
+}
+
+export interface SpectralAlert {
+  severity: "info" | "warning" | "critical";
+  code: string;
+  title: string;
+  message: string;
+  occurred_at: string;
+}
+
+export interface SpectralTimeline {
+  parcel_id: string;
+  planted_at: string;
+  crop: string | null;
+  bucket: SpectralTimelineBucket;
+  points: SpectralTimelinePoint[];
+  alerts: SpectralAlert[];
 }

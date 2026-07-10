@@ -56,7 +56,8 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  if (!userId && token && secret && isProtected(pathname)) {
+  const refresh = request.cookies.get(REFRESH_COOKIE)?.value;
+  if (!userId && secret && isProtected(pathname) && refresh) {
     const refreshed = await tryRefresh(request);
     if (refreshed) return refreshed;
   }

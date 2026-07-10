@@ -36,6 +36,7 @@ apps/mobile/dist/
 
 # python venv (logo tooling)
 .venv-logo/
+.venv-instagram/
 
 # IDE
 .idea/

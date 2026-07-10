@@ -1,8 +1,6 @@
 "use client";
 
-import { scaleIn, springTransition } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 
 export function StatCard({
@@ -21,30 +19,33 @@ export function StatCard({
   className?: string;
 }) {
   return (
-    <motion.div
-      variants={scaleIn}
-      transition={springTransition}
+    <div
       className={cn(
-        "glass-card glow-border rounded-2xl p-5 relative overflow-hidden group",
+        "glass-card glow-border rounded-2xl p-4 sm:p-5 relative overflow-hidden",
         className,
       )}
     >
-      <div
-        className={cn(
-          "absolute -right-4 -top-4 w-24 h-24 rounded-full blur-2xl opacity-40 transition-opacity group-hover:opacity-70",
-          accent === "primary" ? "bg-primary" : "bg-accent",
-        )}
-      />
-      <div className="relative flex items-start justify-between gap-3">
-        <div>
-          <p className="text-xs text-muted uppercase tracking-wide">{label}</p>
-          <p className="text-3xl font-bold mt-1 tabular-nums">{value}</p>
-          {sub && <p className="text-xs text-muted mt-1">{sub}</p>}
+      <div className="relative flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="text-[10px] sm:text-xs text-muted uppercase tracking-wide truncate">
+            {label}
+          </p>
+          <p className="text-2xl sm:text-3xl font-bold mt-0.5 sm:mt-1 tabular-nums truncate">
+            {value}
+          </p>
+          {sub && (
+            <p className="text-[10px] sm:text-xs text-muted mt-0.5 sm:mt-1 line-clamp-2">{sub}</p>
+          )}
         </div>
-        <div className="brand-icon-box w-11 h-11 shrink-0">
-          <Icon className="w-5 h-5" />
+        <div
+          className={cn(
+            "brand-icon-box w-9 h-9 sm:w-11 sm:h-11 shrink-0",
+            accent === "accent" && "text-accent",
+          )}
+        >
+          <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

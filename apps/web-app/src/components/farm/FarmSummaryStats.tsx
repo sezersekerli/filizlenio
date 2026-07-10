@@ -2,9 +2,7 @@
 
 import { StatCard } from "@/components/ui/StatCard";
 import type { FarmSummary } from "@filizlen/shared";
-import { motion } from "framer-motion";
 import { CalendarCheck, CloudSun, MapPin, Wallet } from "lucide-react";
-import { staggerContainer } from "@/lib/motion";
 
 export function FarmSummaryStats({ summary }: { summary: FarmSummary }) {
   const expenseFormatted = summary.seasonExpenseTotal.toLocaleString("tr-TR", {
@@ -12,12 +10,7 @@ export function FarmSummaryStats({ summary }: { summary: FarmSummary }) {
   });
 
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={staggerContainer}
-      className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
-    >
+    <div className="grid grid-cols-2 gap-2 sm:gap-4 xl:grid-cols-4">
       <StatCard
         label="Aktif parsel"
         value={summary.parcelCount}
@@ -28,9 +21,11 @@ export function FarmSummaryStats({ summary }: { summary: FarmSummary }) {
         label="Bugünkü iş"
         value={summary.todayTaskCount}
         sub={
-          summary.criticalTaskCount > 0
-            ? `${summary.criticalTaskCount} kritik`
-            : "Kritik iş yok"
+          summary.overdueTaskCount > 0
+            ? `${summary.overdueTaskCount} geciken`
+            : summary.criticalTaskCount > 0
+              ? `${summary.criticalTaskCount} kritik`
+              : "Geciken yok"
         }
         icon={CalendarCheck}
       />
@@ -47,6 +42,6 @@ export function FarmSummaryStats({ summary }: { summary: FarmSummary }) {
         sub="Yıl başından itibaren"
         icon={Wallet}
       />
-    </motion.div>
+    </div>
   );
 }

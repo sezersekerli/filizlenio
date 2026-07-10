@@ -61,6 +61,47 @@ body {
   backdrop-filter: blur(16px);
 }
 
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .page-stack {
+    gap: 2rem;
+  }
+}
+
+.mobile-card {
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+@media (min-width: 640px) {
+  .mobile-card {
+    border-radius: 1rem;
+    padding: 1.25rem;
+  }
+}
+
 .glow-border {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
@@ -236,6 +277,26 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
+.parcel-map-label {
+  background: transparent !important;
+  border: none !important;
+}
+
+.parcel-map-label span {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(10, 18, 14, 0.82);
+  border: 1px solid rgba(34, 197, 94, 0.55);
+  color: #f0fdf4;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
 .timeline-line {
   background: linear-gradient(
     180deg,
@@ -254,6 +315,40 @@ body {
 
 .package-card-control {
   background: linear-gradient(145deg, rgba(20, 83, 45, 0.5), rgba(10, 18, 14, 0.9));
+}
+
+@media (max-width: 768px) {
+  .glass-card,
+  .sidebar-glass {
+    backdrop-filter: none;
+    background: rgba(10, 18, 14, 0.96);
+  }
+
+  .glow-border:hover {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      0 0 0 1px rgba(34, 197, 94, 0.08);
+  }
+
+  /* iOS: 16px+ font prevents zoom on focus */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]),
+  select,
+  textarea {
+    font-size: 16px;
+    min-height: 2.75rem;
+  }
+
+  input[type="datetime-local"] {
+    min-height: 2.75rem;
+  }
+
+  .parcel-card:hover {
+    transform: none;
+  }
+
+  .farm-plan-card:hover {
+    transform: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

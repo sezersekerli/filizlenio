@@ -37,7 +37,22 @@ export function ParcelForm() {
     preview ? 2 : mahalleId && ada && parselNo ? 1 : ilId ? 0 : 0;
 
   useEffect(() => {
-    api.getIller().then(setIller).catch(() => setIller([]));
+    api
+      .getIller()
+      .then((data) => {
+        setIller(data);
+        if (data.length === 0) {
+          setError("İl listesi boş döndü — lütfen sayfayı yenileyin.");
+        }
+      })
+      .catch((e) => {
+        setIller([]);
+        setError(
+          e instanceof Error
+            ? `İl listesi yüklenemedi: ${e.message}`
+            : "İl listesi yüklenemedi",
+        );
+      });
   }, [api]);
 
   const loadIlceler = useCallback(
@@ -288,7 +303,12 @@ export function ParcelForm() {
         transition={defaultTransition}
         className="map-frame rounded-2xl overflow-hidden"
       >
-        <ParcelMap geometry={mapGeometry} className="h-80 md:h-96 w-full" />
+        <ParcelMap
+          geometry={mapGeometry}
+          ada={ada}
+          parselNo={parselNo}
+          className="h-80 md:h-96 w-full"
+        />
       </motion.div>
     </div>
   );

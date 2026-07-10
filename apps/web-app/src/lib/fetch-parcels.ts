@@ -1,14 +1,18 @@
 import type { Parcel } from "@filizlen/shared";
+import { cache } from "react";
 import { getServerApiClient } from "./api-server";
+import { safeServerFetch } from "./server-fetch";
 
-export async function fetchParcels(): Promise<{ parcels: Parcel[]; error: string | null }> {
-  try {
-    const parcels = await (await getServerApiClient()).listParcels();
-    return { parcels, error: null };
-  } catch (e) {
-    return {
-      parcels: [],
-      error: e instanceof Error ? e.message : "Parseller yüklenemedi",
-    };
-  }
-}
+export const fetchParcels = cache(async (): Promise<{
+  parcels: Parcel[];
+  error: string | null;
+}> => {
+  const result = await safeServerFetch(
+    async () => (await getServerApiClient()).listParcels(),
+    "Parseller yüklenemedi",
+  );
+  return {
+    parcels: result.ok ? result.data : [],
+    error: result.error,
+  };
+});

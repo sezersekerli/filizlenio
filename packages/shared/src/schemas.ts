@@ -74,8 +74,22 @@ export const createNotificationSchema = z.object({
   scheduled_at: z.string().datetime().optional().nullable(),
 });
 
+export const updateNotificationSettingsSchema = z.object({
+  whatsapp_phone: z
+    .string()
+    .min(10)
+    .max(20)
+    .regex(/^[\d\s+()-]+$/, "Geçerli bir telefon numarası girin")
+    .optional()
+    .nullable(),
+  whatsapp_notifications_enabled: z.boolean().optional(),
+});
+
 export type UpsertParcelSeasonInput = z.infer<typeof upsertParcelSeasonSchema>;
 export type CreateFarmTaskInput = z.infer<typeof createFarmTaskSchema>;
 export type UpdateFarmTaskInput = z.infer<typeof updateFarmTaskSchema>;
 export type CreateExpenseInput = z.infer<typeof createExpenseSchema>;
 export type CreateNotificationInput = z.infer<typeof createNotificationSchema>;
+export type UpdateNotificationSettingsInput = z.infer<
+  typeof updateNotificationSettingsSchema
+>;

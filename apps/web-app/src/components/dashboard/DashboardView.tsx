@@ -7,9 +7,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { ButtonLink } from "@/components/ui/Button";
 import { PLAN_LABELS, PLAN_LIMITS } from "@filizlen/shared";
 import type { Parcel } from "@filizlen/shared";
-import { motion } from "framer-motion";
 import { MapPin, Plus } from "lucide-react";
-import { staggerContainer } from "@/lib/motion";
 
 export function DashboardView({
   parcels,
@@ -25,7 +23,7 @@ export function DashboardView({
   const planLabel = PLAN_LABELS[plan] ?? plan;
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-5 md:space-y-10">
       <PageHeader
         eyebrow="Hoş geldin"
         title="Panel"
@@ -40,12 +38,7 @@ export function DashboardView({
         }
       />
 
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={staggerContainer}
-        className="grid gap-4 sm:grid-cols-3"
-      >
+      <div className="grid grid-cols-2 gap-2 sm:gap-4 sm:grid-cols-3">
         <StatCardInline
           label="Kayıtlı parsel"
           value={String(parcels.length)}
@@ -56,14 +49,19 @@ export function DashboardView({
           value={`%${usedPct}`}
           sub={parcels.length >= limit ? "Limit doldu" : `${limit - parcels.length} hak kaldı`}
         />
-        <StatCardInline label="Plan" value={planLabel} sub="Sense · Cloud · Control" />
-      </motion.div>
+        <StatCardInline
+          label="Plan"
+          value={planLabel}
+          sub="Sense · Cloud · Control"
+          className="col-span-2 sm:col-span-1"
+        />
+      </div>
 
       {error && <ApiErrorBanner message={error} />}
 
       <section>
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-semibold">Parselleriniz</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base sm:text-lg font-semibold">Parselleriniz</h2>
           <ButtonLink href="/parcels" variant="ghost" size="sm">
             Tümünü gör
           </ButtonLink>
@@ -82,23 +80,18 @@ export function DashboardView({
             }
           />
         ) : (
-          <motion.ul
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-          >
+          <ul className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {parcels.slice(0, 6).map((p, i) => (
               <ParcelCard key={p.id} parcel={p} index={i} />
             ))}
-          </motion.ul>
+          </ul>
         )}
       </section>
 
       {parcels.length > 0 && (
         <div className="text-center">
-          <ButtonLink href="/farm" variant="ghost">
-            Tarla yönetimi paneline git →
+          <ButtonLink href="/farm" variant="ghost" className="w-full sm:w-auto">
+            Tarla yönetimine git →
           </ButtonLink>
         </div>
       )}
@@ -110,16 +103,18 @@ function StatCardInline({
   label,
   value,
   sub,
+  className = "",
 }: {
   label: string;
   value: string;
-  sub: string;
+  sub?: string;
+  className?: string;
 }) {
   return (
-    <div className="glass-card glow-border rounded-2xl p-5">
-      <p className="text-xs text-muted uppercase tracking-wide">{label}</p>
-      <p className="text-2xl font-bold mt-1">{value}</p>
-      <p className="text-xs text-muted mt-1">{sub}</p>
+    <div className={`glass-card rounded-2xl p-4 ${className}`}>
+      <p className="text-[10px] sm:text-xs text-muted uppercase tracking-wide">{label}</p>
+      <p className="text-xl sm:text-2xl font-bold mt-0.5 tabular-nums">{value}</p>
+      {sub && <p className="text-[10px] sm:text-xs text-muted mt-0.5 line-clamp-2">{sub}</p>}
     </div>
   );
 }

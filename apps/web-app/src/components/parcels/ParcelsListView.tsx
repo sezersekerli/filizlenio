@@ -7,9 +7,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { ButtonLink } from "@/components/ui/Button";
 import { PLAN_LIMITS } from "@filizlen/shared";
 import type { Parcel } from "@filizlen/shared";
-import { motion } from "framer-motion";
 import { MapPin, Plus } from "lucide-react";
-import { staggerContainer } from "@/lib/motion";
 
 export function ParcelsListView({
   parcels,
@@ -21,7 +19,7 @@ export function ParcelsListView({
   const atLimit = parcels.length >= PLAN_LIMITS.free.maxParcels;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5 md:space-y-8">
       <PageHeader
         eyebrow="Harita"
         title="Parseller"
@@ -39,14 +37,10 @@ export function ParcelsListView({
       {error && <ApiErrorBanner message={error} />}
 
       {atLimit && (
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-sm text-amber-300 glass-card glow-border rounded-xl px-4 py-3"
-        >
+        <p className="text-sm text-amber-300 glass-card rounded-xl px-4 py-3">
           Ücretsiz planda {PLAN_LIMITS.free.maxParcels} parsel limitine ulaştınız. Premium paketler
           yakında.
-        </motion.p>
+        </p>
       )}
 
       {parcels.length === 0 ? (
@@ -64,16 +58,11 @@ export function ParcelsListView({
           }
         />
       ) : (
-        <motion.ul
-          initial="hidden"
-          animate="visible"
-          variants={staggerContainer}
-          className="grid gap-3 sm:grid-cols-2"
-        >
+        <ul className="grid gap-3 sm:grid-cols-2">
           {parcels.map((p, i) => (
             <ParcelCard key={p.id} parcel={p} index={i} variant="list" />
           ))}
-        </motion.ul>
+        </ul>
       )}
     </div>
   );

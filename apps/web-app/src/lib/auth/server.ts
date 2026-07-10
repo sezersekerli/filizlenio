@@ -1,10 +1,11 @@
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { cache } from "react";
 import { ACCESS_COOKIE, type AuthUser } from "./constants";
 
 const ISSUER = "filizlen-api";
 
-export async function getSessionUser(): Promise<AuthUser | null> {
+export const getSessionUser = cache(async (): Promise<AuthUser | null> => {
   const cookieStore = await cookies();
   const token = cookieStore.get(ACCESS_COOKIE)?.value;
   if (!token) return null;
@@ -35,7 +36,7 @@ export async function getSessionUser(): Promise<AuthUser | null> {
   } catch {
     return null;
   }
-}
+});
 
 export function isAuthConfigured(): boolean {
   return Boolean(process.env.AUTH_JWT_SECRET);

@@ -5,26 +5,22 @@ import { AppBackground } from "@/components/effects/AppBackground";
 import { logoutUser } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { PLAN_LABELS } from "@filizlen/shared";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   CalendarCheck,
   LayoutDashboard,
   LogOut,
   Map,
-  Menu,
   Package,
-  X,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
 
 const nav = [
-  { href: "/dashboard", label: "Panel", icon: LayoutDashboard },
-  { href: "/farm", label: "Tarla yönetimi", icon: CalendarCheck },
-  { href: "/parcels", label: "Parseller", icon: Map },
-  { href: "/packages", label: "Paketler", icon: Package },
-];
+  { href: "/dashboard", label: "Panel", shortLabel: "Panel", icon: LayoutDashboard },
+  { href: "/farm", label: "Tarla yönetimi", shortLabel: "Tarla", icon: CalendarCheck },
+  { href: "/parcels", label: "Parseller", shortLabel: "Parsel", icon: Map },
+  { href: "/packages", label: "Paketler", shortLabel: "Paket", icon: Package },
+] as const;
 
 function NavLinks({
   pathname,
@@ -37,32 +33,38 @@ function NavLinks({
 }) {
   return (
     <>
-      {nav.map(({ href, label, icon: Icon }) => {
+      {nav.map(({ href, label, shortLabel, icon: Icon }) => {
         const active = pathname.startsWith(href);
+        const displayLabel = layout === "bottom" ? shortLabel : label;
         return (
           <Link
             key={href}
             href={href}
             onClick={onNavigate}
             className={cn(
-              "relative flex items-center gap-2.5 rounded-xl text-sm font-medium transition-colors",
+              "relative flex items-center justify-center transition-colors",
               layout === "bottom"
-                ? "flex-col gap-1 px-3 py-2 text-[10px]"
-                : "px-3 py-2.5",
+                ? "flex-col gap-0.5 min-w-[4.25rem] min-h-[44px] px-2 py-1.5 text-[10px] font-medium"
+                : "gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium",
               active
                 ? "text-primary"
                 : "text-muted hover:text-foreground hover:bg-white/5",
+              layout === "sidebar" && "rounded-xl",
             )}
           >
             {active && layout === "sidebar" && (
-              <motion.span
-                layoutId="nav-active"
-                className="absolute inset-0 rounded-xl bg-primary/12 border border-primary/20"
-                transition={{ type: "spring", stiffness: 380, damping: 30 }}
-              />
+              <span className="absolute inset-0 rounded-xl bg-primary/12 border border-primary/20" />
             )}
-            <Icon className={cn("relative z-10", layout === "bottom" ? "w-5 h-5" : "w-4 h-4")} />
-            <span className="relative z-10">{label}</span>
+            {active && layout === "bottom" && (
+              <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-primary" />
+            )}
+            <Icon
+              className={cn(
+                "relative z-10 shrink-0",
+                layout === "bottom" ? "w-5 h-5" : "w-4 h-4",
+              )}
+            />
+            <span className="relative z-10 leading-tight text-center">{displayLabel}</span>
           </Link>
         );
       })}
@@ -81,7 +83,6 @@ export function AppShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [mobileOpen, setMobileOpen] = useState(false);
 
   async function signOut() {
     await logoutUser();
@@ -101,20 +102,14 @@ export function AppShell({
   const planLabel = PLAN_LABELS[plan] ?? plan;
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-[100dvh] relative">
       <AppBackground subtle />
 
-      <div className="flex min-h-screen">
-        {/* Desktop sidebar */}
+      <div className="flex min-h-[100dvh]">
         <aside className="hidden md:flex md:w-64 md:flex-col sidebar-glass fixed inset-y-0 left-0 z-30">
           <div className="p-5 flex-1 flex flex-col">
             <Link href="/dashboard" className="block mb-10 group">
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 400 }}
-              >
-                <Logo variant="full" href={null} className="min-w-0 max-w-[220px]" />
-              </motion.div>
+              <Logo variant="full" href={null} className="min-w-0 max-w-[220px]" />
             </Link>
 
             <nav className="space-y-1">
@@ -134,7 +129,7 @@ export function AppShell({
               <button
                 type="button"
                 onClick={signOut}
-                className="flex w-full items-center gap-2 px-3 py-2 rounded-xl text-sm text-muted hover:text-foreground hover:bg-white/5 transition-colors"
+                className="flex w-full items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-muted hover:text-foreground hover:bg-white/5 transition-colors min-h-[44px]"
               >
                 <LogOut className="w-4 h-4" />
                 Çıkış
@@ -143,72 +138,26 @@ export function AppShell({
           </div>
         </aside>
 
-        {/* Mobile header */}
-        <div className="md:hidden fixed top-0 inset-x-0 z-40 sidebar-glass border-b border-[var(--card-border)]">
-          <div className="flex items-center justify-between px-4 h-14">
-            <Logo variant="full" href="/dashboard" className="h-8 min-w-0 max-w-[180px]" />
+        <div className="md:hidden fixed top-0 inset-x-0 z-40 sidebar-glass border-b border-[var(--card-border)] pt-safe">
+          <div className="flex items-center justify-between px-3 h-14">
+            <Logo variant="full" href="/dashboard" className="h-7 min-w-0 max-w-[160px]" />
             <button
               type="button"
-              onClick={() => setMobileOpen(true)}
-              className="p-2 text-muted"
-              aria-label="Menü"
+              onClick={signOut}
+              className="p-2.5 text-muted min-h-[44px] min-w-[44px] flex items-center justify-center"
+              aria-label="Çıkış"
             >
-              <Menu className="w-5 h-5" />
+              <LogOut className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Mobile drawer */}
-        <AnimatePresence>
-          {mobileOpen && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="md:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
-                onClick={() => setMobileOpen(false)}
-              />
-              <motion.aside
-                initial={{ x: "100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "100%" }}
-                transition={{ type: "spring", damping: 28, stiffness: 320 }}
-                className="md:hidden fixed inset-y-0 right-0 z-50 w-72 sidebar-glass p-5 flex flex-col"
-              >
-                <div className="flex justify-between items-center mb-8">
-                  <span className="font-semibold">Menü</span>
-                  <button type="button" onClick={() => setMobileOpen(false)} aria-label="Kapat">
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-                <nav className="space-y-1 flex-1">
-                  <NavLinks
-                    pathname={pathname}
-                    layout="sidebar"
-                    onNavigate={() => setMobileOpen(false)}
-                  />
-                </nav>
-                <button
-                  type="button"
-                  onClick={signOut}
-                  className="flex items-center gap-2 text-sm text-muted mt-4"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Çıkış
-                </button>
-              </motion.aside>
-            </>
-          )}
-        </AnimatePresence>
-
-        <main className="flex-1 md:ml-64 pt-14 md:pt-0 pb-20 md:pb-0">
-          <div className="p-4 md:p-8 lg:p-10 max-w-6xl mx-auto">{children}</div>
+        <main className="flex-1 md:ml-64 pt-[calc(3.5rem+env(safe-area-inset-top,0px))] md:pt-0 pb-[calc(4.25rem+env(safe-area-inset-bottom,0px))] md:pb-0">
+          <div className="p-3 sm:p-5 md:p-8 lg:p-10 max-w-6xl mx-auto page-stack">{children}</div>
         </main>
 
-        {/* Mobile bottom nav */}
-        <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 sidebar-glass border-t border-[var(--card-border)] px-2 pb-safe">
-          <div className="flex justify-around py-2">
+        <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 sidebar-glass border-t border-[var(--card-border)] px-1 pb-safe pt-0.5">
+          <div className="flex justify-around items-stretch">
             <NavLinks pathname={pathname} layout="bottom" />
           </div>
         </nav>

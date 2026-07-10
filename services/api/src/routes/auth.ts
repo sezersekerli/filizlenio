@@ -201,8 +201,11 @@ authRoutes.get("/me", async (c) => {
       email: string;
       display_name: string | null;
       plan: string;
+      whatsapp_phone: string | null;
+      whatsapp_notifications_enabled: boolean;
     }>(
-      `select u.email, p.display_name, p.plan
+      `select u.email, p.display_name, p.plan,
+              p.whatsapp_phone, p.whatsapp_notifications_enabled
        from users u
        join profiles p on p.id = u.id
        where u.id = $1`,
@@ -216,6 +219,8 @@ authRoutes.get("/me", async (c) => {
       email: user.email,
       displayName: user.display_name,
       plan: user.plan,
+      whatsappPhone: user.whatsapp_phone,
+      whatsappNotificationsEnabled: user.whatsapp_notifications_enabled,
     });
   } catch {
     return c.json({ error: "Unauthorized" }, 401);

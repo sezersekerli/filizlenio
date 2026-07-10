@@ -4,6 +4,7 @@ import { ToneBadge } from "@/components/ui/ToneBadge";
 import { TKGM_DISCLAIMER } from "@filizlen/shared";
 import type { Parcel, ParcelSeason, WeatherSnapshot } from "@filizlen/shared";
 import { getTkgmLocationLabel } from "@filizlen/shared";
+import { formatParcelTitle } from "@/lib/parcel-display";
 import Link from "next/link";
 
 export type ParcelPlan = {
@@ -27,7 +28,7 @@ export function FarmParcelPlans({ plans }: { plans: ParcelPlan[] }) {
   return (
     <div className="grid gap-4 lg:grid-cols-3">
       {plans.map(({ parcel, season, weather, nextTaskTitle }) => {
-        const title = parcel.label || `Ada ${parcel.ada} / ${parcel.parsel_no}`;
+        const title = formatParcelTitle(parcel);
         const crop = season?.crop ?? "Ürün belirtilmedi";
         const stage = season?.stage ?? "Başlangıç";
         const progress = season?.progress_pct ?? 0;
@@ -41,7 +42,7 @@ export function FarmParcelPlans({ plans }: { plans: ParcelPlan[] }) {
           <Link
             key={parcel.id}
             href={`/parcels/${parcel.id}`}
-            className="glass-card glow-border rounded-3xl p-5 transition-transform duration-300 hover:-translate-y-1 block"
+            className="farm-plan-card glass-card glow-border rounded-2xl sm:rounded-3xl p-4 sm:p-5 md:hover:-translate-y-1 transition-transform duration-300 block active:scale-[0.99]"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -91,7 +92,7 @@ export function FarmParcelPlans({ plans }: { plans: ParcelPlan[] }) {
                   <p className="mt-1 text-foreground/90">{nextTaskTitle}</p>
                 </div>
               )}
-              <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
+              <div className="hidden sm:block rounded-2xl border border-white/10 bg-black/20 p-3">
                 <p className="text-xs font-semibold text-muted">WhatsApp taslağı</p>
                 <p className="mt-1 text-xs leading-relaxed text-foreground/80">{whatsappDraft}</p>
               </div>

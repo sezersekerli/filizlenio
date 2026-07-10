@@ -1,7 +1,8 @@
 import { FarmManagementView } from "@/components/farm/FarmManagementView";
 import type { ParcelPlan } from "@/components/farm/FarmParcelPlans";
+import { loadFarmActivity, loadFarmPendingTasks } from "@/lib/farm-page";
 import { getServerApiClient } from "@/lib/api-server";
-import type { FarmSummary, FarmTask, NotificationMessage, Parcel } from "@filizlen/shared";
+import type { FarmActivityItem, FarmSummary, FarmTask, Parcel } from "@filizlen/shared";
 
 async function loadParcelPlans(
   api: Awaited<ReturnType<typeof getServerApiClient>>,
@@ -15,60 +16,81 @@ async function loadParcelPlans(
     }
   }
 
-  const plans: ParcelPlan[] = [];
-  for (const parcel of parcels.slice(0, 12)) {
-    let season = null;
-    let weather = null;
-    try {
-      season = await api.getParcelSeason(parcel.id);
-    } catch {
-      // ignore
-    }
-    try {
-      weather = await api.getParcelWeather(parcel.id);
-    } catch {
-      // ignore
-    }
-    plans.push({
-      parcel,
-      season,
-      weather,
-      nextTaskTitle: pendingByParcel.get(parcel.id) ?? null,
-    });
-  }
-  return plans;
+  return Promise.all(
+    parcels.slice(0, 8).map(async (parcel) => {
+      const [season, weather] = await Promise.all([
+        api.getParcelSeason(parcel.id).catch(() => null),
+        api.getParcelWeather(parcel.id).catch(() => null),
+      ]);
+      return {
+        parcel,
+        season,
+        weather,
+        nextTaskTitle: pendingByParcel.get(parcel.id) ?? null,
+      };
+    }),
+  );
 }
 
 export default async function FarmPage() {
   let summary: FarmSummary | null = null;
   let tasks: FarmTask[] = [];
-  let notifications: NotificationMessage[] = [];
+  let activity: FarmActivityItem[] = [];
   let plans: ParcelPlan[] = [];
-  let error: string | null = null;
+  let parcels: Parcel[] = [];
+  const errors: string[] = [];
 
-  try {
-    const api = await getServerApiClient();
-    const [summaryData, tasksData, notificationsData, parcels] = await Promise.all([
+  const api = await getServerApiClient();
+
+  const [summaryResult, tasksResult, activityResult, parcelsResult] =
+    await Promise.allSettled([
       api.getFarmSummary(),
-      api.listFarmTasks(),
-      api.listNotifications(),
+      loadFarmPendingTasks(),
+      loadFarmActivity(5),
       api.listParcels(),
     ]);
-    summary = summaryData;
-    tasks = tasksData;
-    notifications = notificationsData;
-    plans = await loadParcelPlans(api, parcels, tasksData);
-  } catch (e) {
-    error = e instanceof Error ? e.message : "Tarla yönetimi verileri yüklenemedi";
+
+  if (summaryResult.status === "fulfilled") {
+    summary = summaryResult.value;
+  } else {
+    errors.push(
+      summaryResult.reason instanceof Error
+        ? summaryResult.reason.message
+        : "Özet yüklenemedi",
+    );
+  }
+
+  if (tasksResult.status === "fulfilled") {
+    tasks = tasksResult.value;
+  }
+
+  if (activityResult.status === "fulfilled") {
+    activity = activityResult.value;
+  }
+
+  if (parcelsResult.status === "fulfilled") {
+    parcels = parcelsResult.value;
+    try {
+      plans = await loadParcelPlans(api, parcels, tasks);
+    } catch (e) {
+      errors.push(e instanceof Error ? e.message : "Parsel planları yüklenemedi");
+    }
+  } else {
+    errors.push(
+      parcelsResult.reason instanceof Error
+        ? parcelsResult.reason.message
+        : "Parseller yüklenemedi",
+    );
   }
 
   return (
     <FarmManagementView
       summary={summary}
+      parcelCount={parcels.length}
       tasks={tasks}
-      notifications={notifications}
+      activity={activity}
       plans={plans}
-      error={error}
+      error={errors.length > 0 ? errors.join(" · ") : null}
     />
   );
 }

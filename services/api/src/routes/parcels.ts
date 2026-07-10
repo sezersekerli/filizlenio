@@ -1,6 +1,7 @@
-import { createParcelEventSchema, createParcelSchema, PLAN_LIMITS } from "@filizlen/shared";
+import { createParcelEventSchema, createParcelSchema } from "@filizlen/shared";
 import { Hono } from "hono";
 import type { AuthVariables } from "../middleware/auth.js";
+import { getUserParcelLimit } from "../lib/parcel-access.js";
 import { query } from "../lib/db.js";
 import { fetchParselFields } from "../lib/tkgm.js";
 
@@ -47,12 +48,13 @@ parcelsRoutes.post("/", async (c) => {
     [userId],
   );
   const count = Number(countRows[0]?.count ?? 0);
-  if (count >= PLAN_LIMITS.free.maxParcels) {
+  const limit = await getUserParcelLimit(userId);
+  if (count >= limit) {
     return c.json(
       {
         error: "parcel_limit_reached",
-        message: `Ücretsiz planda en fazla ${PLAN_LIMITS.free.maxParcels} parsel ekleyebilirsiniz.`,
-        limit: PLAN_LIMITS.free.maxParcels,
+        message: `En fazla ${limit} parsel ekleyebilirsiniz.`,
+        limit,
       },
       403,
     );
@@ -117,8 +119,8 @@ parcelsRoutes.post("/", async (c) => {
       return c.json(
         {
           error: "parcel_limit_reached",
-          message: `Ücretsiz planda en fazla ${PLAN_LIMITS.free.maxParcels} parsel ekleyebilirsiniz.`,
-          limit: PLAN_LIMITS.free.maxParcels,
+          message: "Parsel limitine ulaştınız.",
+          limit: await getUserParcelLimit(userId),
         },
         403,
       );

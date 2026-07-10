@@ -5,12 +5,21 @@ import type { NotificationMessage } from "@filizlen/shared";
 import { MessageCircle, Send } from "lucide-react";
 import { useState } from "react";
 
-function statusLabel(status: string, scheduledAt: string | null) {
+function statusLabel(status: string, scheduledAt: string | null, sentAt: string | null) {
+  if (status === "sent" && sentAt) {
+    return new Date(sentAt).toLocaleString("tr-TR", {
+      day: "numeric",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
   if (status === "scheduled" && scheduledAt) {
     return new Date(scheduledAt).toLocaleString("tr-TR");
   }
   if (status === "draft") return "Taslak";
   if (status === "sent") return "Gönderildi";
+  if (status === "failed") return "Gönderilemedi";
   return status;
 }
 
@@ -24,7 +33,7 @@ export function FarmNotificationCenter({
   if (notifications.length === 0) {
     return (
       <p className="text-sm text-muted text-center py-8">
-        Henüz WhatsApp taslağı yok. Görev veya risk oluşturduğunuzda burada görünür.
+        Henüz bildirim yok. Numaranızı kaydedip bildirimleri açın; sistem otomatik gönderir.
       </p>
     );
   }
@@ -39,11 +48,24 @@ export function FarmNotificationCenter({
           >
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm font-semibold text-primary">{message.label}</p>
-              <span className="text-[11px] text-muted">
-                {statusLabel(message.status, message.scheduled_at)}
+              <span
+                className={
+                  message.status === "sent"
+                    ? "text-[11px] text-primary"
+                    : message.status === "failed"
+                      ? "text-[11px] text-red-300"
+                      : "text-[11px] text-muted"
+                }
+              >
+                {statusLabel(message.status, message.scheduled_at, message.sent_at)}
               </span>
             </div>
-            <p className="mt-2 text-sm leading-relaxed text-foreground/90">{message.body}</p>
+            <p className="mt-2 text-sm leading-relaxed text-foreground/90 whitespace-pre-line">
+              {message.body}
+            </p>
+            {message.status === "failed" && message.error_message && (
+              <p className="mt-2 text-xs text-red-300">{message.error_message}</p>
+            )}
             <button
               type="button"
               onClick={() => setPreview(message)}

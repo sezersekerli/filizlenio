@@ -1,54 +1,57 @@
 "use client";
 
-import { FarmNotificationCenter } from "@/components/farm/FarmNotificationCenter";
 import { FarmParcelPlans } from "@/components/farm/FarmParcelPlans";
 import type { ParcelPlan } from "@/components/farm/FarmParcelPlans";
+import { FarmQuickNav } from "@/components/farm/FarmQuickNav";
 import { FarmSummaryStats } from "@/components/farm/FarmSummaryStats";
-import { FarmTaskList } from "@/components/farm/FarmTaskList";
+import { FarmActivityTimeline } from "@/components/farm/FarmActivityTimeline";
+import { FarmPendingTasks } from "@/components/farm/FarmPendingTasks";
 import { ApiErrorBanner } from "@/components/ui/ApiErrorBanner";
 import { ButtonLink } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { ToneBadge } from "@/components/ui/ToneBadge";
-import { defaultTransition, fadeInUp } from "@/lib/motion";
-import type { FarmSummary, FarmTask, NotificationMessage } from "@filizlen/shared";
-import { motion } from "framer-motion";
-import {
-  Bell,
-  CheckCircle2,
-  MapPin,
-  MessageCircle,
-  Plus,
-} from "lucide-react";
+import { PLAN_LIMITS } from "@filizlen/shared";
+import type { FarmActivityItem, FarmSummary, FarmTask } from "@filizlen/shared";
+import { AlertTriangle, Banknote, ClipboardList, MapPin, Plus } from "lucide-react";
+import Link from "next/link";
 
 export function FarmManagementView({
   summary,
+  parcelCount,
   tasks,
-  notifications,
+  activity,
   plans,
   error,
 }: {
   summary: FarmSummary | null;
+  parcelCount: number;
   tasks: FarmTask[];
-  notifications: NotificationMessage[];
+  activity: FarmActivityItem[];
   plans: ParcelPlan[];
   error: string | null;
 }) {
-  const emptyParcels = (summary?.parcelCount ?? 0) === 0;
+  const taskBadge =
+    (summary?.overdueTaskCount ?? 0) + (summary?.todayTaskCount ?? 0);
+  const emptyParcels = parcelCount === 0;
+  const atParcelLimit = parcelCount >= PLAN_LIMITS.free.maxParcels;
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-5 md:space-y-8">
       <PageHeader
         eyebrow="Tarla yönetimi"
-        title="Sezon komuta merkezi"
-        description="Parseller, günlük işler, riskler, masraflar ve WhatsApp hatırlatmaları tek mobil uyumlu panelde."
+        title="Özet"
+        description="Parselleriniz, bugünkü işler ve masraflar — sade ve hızlı."
         action={
-          <ButtonLink href="/parcels/new" size="lg">
-            <Plus className="h-4 w-4" />
-            Parsel ekle
-          </ButtonLink>
+          !atParcelLimit ? (
+            <ButtonLink href="/parcels/new" size="lg">
+              <Plus className="h-4 w-4" />
+              Parsel ekle
+            </ButtonLink>
+          ) : undefined
         }
       />
+
+      <FarmQuickNav taskBadge={taskBadge} />
 
       {error && <ApiErrorBanner message={error} />}
 
@@ -56,7 +59,7 @@ export function FarmManagementView({
         <EmptyState
           icon={MapPin}
           title="Henüz parsel yok"
-          description="TKGM ile ilk parselinizi ekleyin; günlük işler ve sezon takibi burada görünür."
+          description="TKGM ile ilk parselinizi ekleyin."
           action={
             <ButtonLink href="/parcels/new" size="lg">
               <Plus className="w-4 h-4" />
@@ -66,102 +69,78 @@ export function FarmManagementView({
         />
       ) : (
         <>
-          <motion.section
-            initial="hidden"
-            animate="visible"
-            variants={fadeInUp}
-            transition={defaultTransition}
-            className="glass-card glow-border relative overflow-hidden rounded-3xl p-5 sm:p-7 lg:p-8"
-          >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(34,197,94,0.18),transparent_34%),radial-gradient(circle_at_95%_10%,rgba(56,189,248,0.14),transparent_28%)]" />
-            <div className="relative grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-              <div>
-                <ToneBadge tone="accent">WhatsApp destekli saha akışı</ToneBadge>
-                <h2 className="mt-5 max-w-2xl text-2xl font-bold tracking-tight text-gradient sm:text-3xl">
-                  Çiftçi uygulama indirmese bile iş emrini WhatsApp&apos;tan görür.
-                </h2>
-                <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted sm:text-base">
-                  Sistem parselin ürününe, hava durumuna ve sezon aşamasına göre sulama, gübreleme,
-                  ilaçlama, hastalık kontrolü ve masraf girişi için sade mesajlar hazırlar.
-                </p>
-                <div className="mt-7 grid gap-3 sm:grid-cols-3">
-                  {["Parsel bazlı plan", "Günlük hatırlatma", "Masraf ve kâr takibi"].map((item) => (
-                    <div
-                      key={item}
-                      className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-foreground"
-                    >
-                      <CheckCircle2 className="mb-2 h-4 w-4 text-primary" />
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-[2rem] border border-primary/20 bg-[#07110c] p-3 shadow-2xl shadow-primary/10">
-                <div className="rounded-[1.5rem] border border-white/10 bg-gradient-to-b from-[#0d1f15] to-[#07110c] p-4">
-                  <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-3">
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/15 text-primary">
-                        <MessageCircle className="h-5 w-5" />
-                      </span>
-                      <div>
-                        <p className="text-sm font-semibold">Filizlen Asistan</p>
-                        <p className="text-[11px] text-primary">çevrimiçi</p>
-                      </div>
-                    </div>
-                    <Bell className="h-4 w-4 text-muted" />
-                  </div>
-                  <div className="space-y-3">
-                    <div className="max-w-[88%] rounded-2xl rounded-tl-sm bg-white/8 p-3 text-xs leading-relaxed text-muted">
-                      {notifications[0]?.body ??
-                        "Günaydın. Bugünkü saha planınız hazırlanıyor."}
-                    </div>
-                    {tasks[0] && (
-                      <div className="ml-auto max-w-[90%] rounded-2xl rounded-tr-sm bg-primary px-3 py-2.5 text-xs font-medium leading-relaxed text-[#052e16]">
-                        Sıradaki iş: {tasks[0].title}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.section>
-
           {summary && <FarmSummaryStats summary={summary} />}
 
-          <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-            <section className="glass-card glow-border rounded-3xl p-5 sm:p-6">
-              <div className="mb-5 flex items-center justify-between gap-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {!atParcelLimit && (
+              <Link
+                href="/parcels/new"
+                className="glass-card rounded-2xl p-5 flex items-center gap-4 hover:border-primary/30 transition-colors min-h-[72px]"
+              >
+                <MapPin className="h-6 w-6 text-primary shrink-0" />
                 <div>
-                  <h2 className="text-lg font-semibold">Bugünün saha işleri</h2>
-                  <p className="mt-1 text-xs text-muted">Çiftçinin sabah bakacağı sade iş listesi.</p>
+                  <p className="font-semibold">Parsel ekle</p>
+                  <p className="text-xs text-muted mt-0.5">TKGM ada / parsel</p>
                 </div>
-                <ToneBadge>Canlı plan</ToneBadge>
+              </Link>
+            )}
+            <Link
+              href="/farm/masraflar"
+              className="glass-card rounded-2xl p-5 flex items-center gap-4 hover:border-primary/30 transition-colors min-h-[72px]"
+            >
+              <Banknote className="h-6 w-6 text-primary shrink-0" />
+              <div>
+                <p className="font-semibold">Masraf gir</p>
+                <p className="text-xs text-muted mt-0.5">Gübre, mazot, ilaç</p>
               </div>
-              <FarmTaskList tasks={tasks} />
-            </section>
-
-            <section className="glass-card glow-border rounded-3xl p-5 sm:p-6">
-              <div className="mb-5 flex items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-lg font-semibold">WhatsApp bildirim merkezi</h2>
-                  <p className="mt-1 text-xs text-muted">
-                    İlk fazda mesaj taslakları hazırlanır; sağlayıcı bağlanınca otomatik gönderilir.
-                  </p>
-                </div>
-                <MessageCircle className="h-5 w-5 text-primary" />
+            </Link>
+            <Link
+              href="/farm/olaylar"
+              className="glass-card rounded-2xl p-5 flex items-center gap-4 hover:border-primary/30 transition-colors min-h-[72px]"
+            >
+              <ClipboardList className="h-6 w-6 text-primary shrink-0" />
+              <div>
+                <p className="font-semibold">Olay ekle</p>
+                <p className="text-xs text-muted mt-0.5">Sulama, hasat, not</p>
               </div>
-              <FarmNotificationCenter notifications={notifications} />
-            </section>
+            </Link>
           </div>
 
-          <section className="space-y-5">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-                Parsel üretim planı
+          {(summary?.overdueTaskCount ?? 0) > 0 && (
+            <div className="flex items-center gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+              <AlertTriangle className="h-5 w-5 shrink-0 text-amber-300" />
+              <p>
+                <span className="font-semibold">{summary?.overdueTaskCount} geciken iş</span>{" "}
+                var — önce bunlara bakın.
               </p>
-              <h2 className="mt-2 text-2xl font-semibold">Çiftçinin takip edeceği ana ekran</h2>
+              <Link href="/farm/isler" className="ml-auto shrink-0 text-xs text-amber-200 hover:underline">
+                Gör →
+              </Link>
             </div>
+          )}
+
+          <section className="glass-card rounded-2xl p-5 space-y-4">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="font-semibold">Yapılacak işler</h2>
+              <Link href="/farm/isler" className="text-xs text-primary hover:underline">
+                Tümü →
+              </Link>
+            </div>
+            <FarmPendingTasks tasks={tasks} />
+          </section>
+
+          <section className="glass-card rounded-2xl p-5 space-y-4">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="font-semibold">Son aktiviteler</h2>
+              <Link href="/farm/isler?tab=gecmis" className="text-xs text-primary hover:underline">
+                Tüm geçmiş →
+              </Link>
+            </div>
+            <FarmActivityTimeline initialItems={activity} compact />
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="font-semibold">Parseller</h2>
             <FarmParcelPlans plans={plans} />
           </section>
         </>

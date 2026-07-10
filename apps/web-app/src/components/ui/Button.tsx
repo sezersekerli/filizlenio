@@ -20,9 +20,9 @@ type ButtonProps = {
 };
 
 const sizes = {
-  sm: "px-4 py-2 text-xs rounded-xl",
-  md: "px-5 py-2.5 text-sm rounded-xl",
-  lg: "px-6 py-3 text-sm rounded-2xl",
+  sm: "px-4 py-2.5 text-xs rounded-xl min-h-[44px]",
+  md: "px-5 py-3 text-sm rounded-xl min-h-[44px]",
+  lg: "px-6 py-3.5 text-sm rounded-2xl min-h-[48px]",
 };
 
 const variants = {
